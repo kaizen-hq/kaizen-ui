@@ -1,0 +1,92 @@
+﻿@using System.Diagnostics.CodeAnalysis
+<div class="pager">
+    <div class="page-number">
+        Page @(Pagination.PageNumber + 1) of @(Pagination.NumberOfPages + 1)
+    </div>
+    <div class="page-size">
+        <label for="page-size">Page Size</label>
+        <select id="page-size" value="@Pagination.PageSize" @onchange="OnPageSizeChange">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+        </select>
+    </div>
+    <div class="page-buttons">
+        <button type="button" @onclick="FirstPage">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-left"><path d="m11 17-5-5 5-5"/><path d="m18 17-5-5 5-5"/></svg>
+        </button>
+        <button type="button" @onclick="OnPreviousPage">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <button type="button" @onclick="OnNextPage">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+        <button type="button" @onclick="LastPage">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-right"><path d="m6 17 5-5-5-5"/><path d="m13 17 5-5-5-5"/></svg>
+        </button>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    [NotNull]
+    public PaginationState? Pagination { get; set; }
+
+    void OnPageSizeChange(ChangeEventArgs e)
+    {
+        if (e.Value is null) return;
+        var pageSize = int.Parse(e.Value.ToString() ?? "10");
+        Pagination.PageSize = pageSize;
+        Pagination.NumberOfPages = (int)Math.Ceiling((decimal)(Pagination.TotalItems / Pagination.PageSize));
+        Pagination.Notify();
+    }
+
+    void OnPreviousPage()
+    {
+        Pagination.PageNumber = Math.Max(0, Pagination.PageNumber - 1);
+        Pagination.Notify();
+    }
+
+    void OnNextPage()
+    {
+        Pagination.PageNumber = Math.Min(Pagination.NumberOfPages, Pagination.PageNumber + 1);
+        Pagination.Notify();
+    }
+
+    protected override void OnInitialized()
+    {
+        Pagination.OnPageChange += (state) =>
+        {
+            Pagination = state;
+            StateHasChanged();
+        };
+    }
+
+    void FirstPage()
+    {
+        Pagination.PageNumber = 0;
+        Pagination.Notify();
+    }
+
+    void LastPage()
+    {
+        Pagination.PageNumber = Pagination.NumberOfPages;
+        Pagination.Notify();
+    }
+
+    public record PaginationState
+    {
+        public int PageNumber { get; set; } = 0;
+        public int PageSize { get; set; } = 10;
+        public int NumberOfPages { get; set; } = 1;
+        public int TotalItems { get; set; } = 0;
+
+        public event Action<PaginationState>? OnPageChange;
+        public void Notify()
+        {
+            OnPageChange?.Invoke(this);
+        }
+    }
+}

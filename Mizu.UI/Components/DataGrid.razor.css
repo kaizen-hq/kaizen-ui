@@ -1,0 +1,13 @@
+﻿.header {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: var(--size-1);
+    font-weight: bold;
+}
+
+.item {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    align-items: center;
+    gap: var(--size-1);
+}

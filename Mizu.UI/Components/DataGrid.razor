@@ -1,0 +1,95 @@
+﻿@typeparam TItem
+@attribute [CascadingTypeParameter(nameof(TItem))]
+@using System.Diagnostics.CodeAnalysis
+@using System.Linq.Expressions
+<div class="santa-grid">
+    <div class="header">
+        <CascadingValue Value="OrderByState">
+            @Header
+        </CascadingValue>
+    </div>
+    @foreach (var item in Query)
+    {
+        <div class="@(string.IsNullOrWhiteSpace(RowCssClass(item)) ? "item" : $"item {RowCssClass(item)}")">
+            @RowTemplate(item)
+        </div>
+    }
+</div>
+
+@code {
+
+    [Parameter]
+    [NotNull]
+    public IQueryable<TItem>? Items { get; set; }
+
+    [Parameter]
+    public RenderFragment? Header { get; set; }
+
+    [Parameter]
+    [NotNull]
+    public RenderFragment<TItem>? RowTemplate { get; set; }
+
+    [Parameter]
+    public Paginator.PaginationState? Pagination { get; set; }
+
+    [Parameter]
+    public Func<TItem, string> RowCssClass { get; set; } = (item) => "";
+
+    private OrderByState<TItem, dynamic> OrderByState { get; } = new();
+
+    IEnumerable<TItem> Query => Pagination is null 
+        ? GetSorted() 
+        : GetSorted().Skip((Pagination.PageNumber) * Pagination.PageSize).Take(Pagination.PageSize);
+
+    private IEnumerable<TItem> GetSorted()
+    {
+        if (!OrderByState.OrderBy.Any()) return Items;
+        var first = OrderByState.OrderBy.First();
+        var orderedQuery = first.Descending ?
+            Items.OrderByDescending(first.SortFunc.Compile()) :
+            Items.OrderBy(first.SortFunc.Compile());
+
+        foreach (var orderBy in OrderByState.OrderBy.Skip(1))
+        {
+            orderedQuery = orderBy.Descending ?
+                orderedQuery.ThenByDescending(orderBy.SortFunc.Compile()) :
+                orderedQuery.ThenBy(orderBy.SortFunc.Compile());
+        }
+        return orderedQuery;
+    }
+
+
+    protected override void OnInitialized()
+    {
+        if (Pagination is not null)
+        {
+            Pagination.OnPageChange += (state) =>
+            {
+                Pagination = state;
+                StateHasChanged();
+            };
+            Pagination.NumberOfPages = (int)Math.Ceiling((decimal)(Items!.Count() / Pagination.PageSize));
+            Pagination.TotalItems = Items?.Count() ?? 0;
+            Pagination.Notify();
+        }
+
+        OrderByState.UpdateOrderBy = (orderBy, remove) =>
+        {
+            OrderByState.OrderBy.RemoveAll(x => x.Name == orderBy.Name);
+            if (!remove)
+                OrderByState.OrderBy.Add(orderBy);
+            StateHasChanged();
+        };
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (Pagination is not null)
+        {
+            Pagination.NumberOfPages = (int)Math.Ceiling((decimal)(Items!.Count() / Pagination.PageSize));
+            Pagination.TotalItems = Items?.Count() ?? 0;
+            Pagination.Notify();
+        }
+    }
+
+}

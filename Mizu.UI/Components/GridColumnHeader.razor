@@ -1,0 +1,56 @@
+﻿@using System.Linq.Expressions
+@using System.Diagnostics.CodeAnalysis
+@typeparam TItem
+
+<strong class="grid-column-header">
+    @if (Sort != null)
+    {
+        <a data-test="sort-@Name" @onclick="UpdateOrderBy">
+            @Name
+            @if (Active)
+            {
+                <span class="sort-icon">
+                    @if (IsCurrentlyDescending)
+                    {
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+                    }
+                    else
+                    {
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+                    }
+                </span>
+            }
+        </a>
+    }
+    else
+    {
+        @Name
+    }
+</strong>
+ 
+@code {
+
+    [CascadingParameter]
+    public OrderByState<TItem, dynamic> OrderByState { get; set; } = new();
+
+    [Parameter]
+    [NotNull]
+    public string? Name { get; set; }
+
+    [Parameter]
+    public Expression<Func<TItem, dynamic>>? Sort { get; set; }
+
+    private bool IsCurrentlyDescending => OrderByState.OrderBy.Any(x => x.Name == Name && x.Descending);
+    private bool Active => OrderByState.OrderBy.Any(x => x.Name == Name);
+    
+    private void UpdateOrderBy()
+    {
+        if (Sort == null) return; // Shouldn't be possible
+        var descending = Active && !OrderByState.OrderBy.First(x => x.Name == Name).Descending;
+        var shouldRemove = Active && !descending;
+        OrderByState.UpdateOrderBy?.Invoke(new OrderBy<TItem, dynamic>(Name, descending, Sort), shouldRemove);
+    }
+
+
+
+}

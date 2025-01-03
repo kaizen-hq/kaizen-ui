@@ -1,0 +1,55 @@
+﻿@page "/"
+@rendermode InteractiveWebAssembly
+
+<PageTitle>Counter</PageTitle>
+
+<h1>Home</h1>
+
+<div class="panel">
+    <header class="heading">
+        <i>Icon</i>
+        <span>Work Items</span>
+    </header>
+    <DataGrid Items="_data" Pagination="_pagination">
+        <Header>
+            <GridColumnHeader Name="Code"/>
+            <GridColumnHeader Name="Description"/>
+            <GridColumnHeader Name="Quantity" Sort="x => x.Price"/>
+            <GridColumnHeader Name="Price"/>
+        </Header>
+        <RowTemplate Context="workItem">
+            <span>@workItem.Code</span>
+            <span>@workItem.Description</span>
+            <span>@workItem.Quantity</span>
+            <span>@workItem.Price</span>
+        </RowTemplate>
+    </DataGrid>
+</div>
+
+<Paginator Pagination="_pagination" />
+
+@code {
+
+    record WorkItem(string Code, string Description, int Quantity, decimal Price);
+    
+    Paginator.PaginationState _pagination = new()
+    {
+        PageSize = 5
+    };
+
+    readonly IQueryable<WorkItem> _data = new List<WorkItem>
+    {
+        new WorkItem("A", "Item A", 1, 10),
+        new WorkItem("B", "Item B", 2, 20),
+        new WorkItem("C", "Item C", 3, 30),
+        new WorkItem("D", "Item D", 4, 40),
+        new WorkItem("E", "Item E", 5, 50),
+        new WorkItem("F", "Item F", 6, 60),
+        new WorkItem("G", "Item G", 7, 70),
+        new WorkItem("H", "Item H", 8, 80),
+        new WorkItem("I", "Item I", 9, 90),
+        new WorkItem("J", "Item J", 10, 100),
+        new WorkItem("K", "Item K", 11, 110),
+    }.AsQueryable();
+
+}

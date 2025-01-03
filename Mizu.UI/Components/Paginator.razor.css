@@ -1,0 +1,14 @@
+﻿.pager {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--size-2);
+}
+
+button {
+    background-color: var(--gray-1);
+    border: none;
+    padding: var(--size-1);
+    cursor: pointer;
+    color: var(--blue-1);
+}
