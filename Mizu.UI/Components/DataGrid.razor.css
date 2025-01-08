@@ -1,4 +1,16 @@
-﻿.header {
+﻿.santa-grid {
+    margin-top: var(--size-3);
+}
+
+.santa-grid {
+    border: 1px solid #aaa;
+}
+
+.santa-grid .item {
+    border-top: 1px solid #aaa;
+}
+
+.header {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     gap: var(--size-1);
@@ -10,4 +22,32 @@
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     align-items: center;
     gap: var(--size-1);
+    position: relative;
+    background: white;
+}
+
+.santa-grid .item:nth-child(even) {
+    background-color: var(--gray-1);
+}
+
+.grouped .header {
+    padding-left: var(--size-4);
+}
+
+.grouped .item {
+    border-left: 1px solid #aaa;
+}
+
+.group {
+    border-top: 1px solid #aaa;
+}
+
+.group-header {
+    font-weight: bold;
+    padding: var(--size-1) 0;
+}
+
+.group {
+    background: var(--gray-1);
+    padding-left: var(--size-4);
 }

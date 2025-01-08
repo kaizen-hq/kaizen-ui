@@ -20,14 +20,8 @@ a, .btn-link {
     border-color: #929292;
 }
 
-table {
-    border-collapse: collapse;
-    width: 100%;
-    margin-top: var(--size-3);
-}
-
-.santa-grid {
-    margin-top: var(--size-3);
+.actions {
+    justify-self: center;
 }
 
 th, .santa-grid .header {
@@ -40,10 +34,14 @@ td, .santa-grid .item {
     padding: var(--size-2);
 }
 
-tr:nth-child(odd), .santa-grid .item:nth-child(odd) {
-    background-color: var(--gray-2);
-}
+
 
 td:has(input) {
     padding: 0;
+}
+
+input {
+    padding: var(--size-1);
+    box-sizing: border-box;
+    max-width: 100%;
 }

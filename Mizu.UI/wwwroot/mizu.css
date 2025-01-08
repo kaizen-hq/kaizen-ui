@@ -1,9 +1,13 @@
 :root {
     --gray-1: #f8f9fa;
     --blue-1: #007bff;
+    --red-1: #dc3545;
+    --red-9: #f8d7da;
     --size-1: 0.5rem;
     --size-2: 1rem;
     --size-3: 1.5rem;
+    --size-4: 2rem;
+    --font-size-01: 0.8rem;
 }
 
 .panel {
@@ -17,4 +21,30 @@
     margin: 0 0 var(--size-2) 0;
     font-size: var(--size-3);
     font-weight: 500;
+}
+
+.item > * {
+    position: relative;
+}
+
+.item .validation-message {
+    position: absolute;
+    top: 105%;
+    color: var(--red-1);
+    border: 1px solid var(--red-1);
+    border-radius: 2px;
+    background-color: var(--red-9);
+    padding: var(--size-1);
+    z-index: 1;
+    font-size: var(--font-size-01);
+}
+
+.invalid {
+    border: 1px solid var(--red-1);
+}
+
+a[role="button"] {
+    color: var(--blue-1);
+    text-decoration: none;
+    cursor: pointer;
 }

@@ -1,0 +1,30 @@
+@using System.Diagnostics.CodeAnalysis
+<div class="expandable-header">
+    <a @onclick="_ => _expanded = !_expanded" role="button">
+        <i>
+            @if (_expanded)
+            {
+                <LucideIcon Name="@LucideIcon.ChevronDown" />
+            }
+            else
+            {
+                <LucideIcon Name="@LucideIcon.ChevronRight" />
+            }
+        </i>
+        <strong>@Title</strong>
+    </a>
+</div>
+<div class="expandable-content" style="display: @(_expanded ? "block" : "none");">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = "";
+    
+    [Parameter]
+    [NotNull]
+    public RenderFragment? ChildContent { get; set; }
+    
+    private bool _expanded;
+}

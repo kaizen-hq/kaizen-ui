@@ -1,0 +1,13 @@
+.expandable-header {
+    padding: var(--size-1) 0;
+}
+
+.expandable-header a {
+    display: flex;
+    align-items: center;
+}
+
+.expandable-header i {
+    position: relative;
+    top: 2px;
+}

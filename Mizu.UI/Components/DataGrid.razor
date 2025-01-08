@@ -1,26 +1,50 @@
-﻿@typeparam TItem
+﻿@typeparam TItem where TItem : class
 @attribute [CascadingTypeParameter(nameof(TItem))]
 @using System.Diagnostics.CodeAnalysis
 @using System.Linq.Expressions
-<div class="santa-grid">
+@using System.Text
+
+<div class="santa-grid @(IsGrouped ? "grouped" : "")">
     <div class="header">
         <CascadingValue Value="OrderByState">
             @Header
         </CascadingValue>
     </div>
-    @foreach (var item in Query)
-    {
-        <div class="@(string.IsNullOrWhiteSpace(RowCssClass(item)) ? "item" : $"item {RowCssClass(item)}")">
-            @RowTemplate(item)
-        </div>
-    }
+    <EditForm EditContext="_editContext">
+        <DataAnnotationsValidator />
+        @if (IsGrouped) 
+        {
+            @foreach (var group in Query.GroupBy(GroupBy!))
+            {
+                <div class="group">
+                    <ExpandableRow Title="@group.Key">
+                        @foreach(var item in group)
+                        {
+                            <div class="@GetRowCssClass(item)">
+                                @RowTemplate(item)
+                            </div>
+                        }
+                    </ExpandableRow>
+                </div>
+            }
+        }
+        else
+        {
+            @foreach (var item in Query)
+            {
+                <div class="@GetRowCssClass(item)">
+                    @RowTemplate(item)
+                </div>
+            }
+        }
+    </EditForm>
 </div>
 
 @code {
 
     [Parameter]
     [NotNull]
-    public IQueryable<TItem>? Items { get; set; }
+    public IEnumerable<TItem>? Items { get; set; }
 
     [Parameter]
     public RenderFragment? Header { get; set; }
@@ -34,12 +58,26 @@
 
     [Parameter]
     public Func<TItem, string> RowCssClass { get; set; } = (item) => "";
+    
+    [Parameter]
+    public Func<TItem, string>? GroupBy { get; set; }
 
     private OrderByState<TItem, dynamic> OrderByState { get; } = new();
+    private EditContext? _editContext;
+    private bool IsGrouped => GroupBy is not null;
 
     IEnumerable<TItem> Query => Pagination is null 
         ? GetSorted() 
         : GetSorted().Skip((Pagination.PageNumber) * Pagination.PageSize).Take(Pagination.PageSize);
+
+    private string GetRowCssClass(TItem item)
+    {
+        var classes = new List<string>();
+        classes.Add("item");
+        if (!string.IsNullOrEmpty(RowCssClass(item)))
+            classes.Add(RowCssClass(item));
+        return string.Join(" ", classes);
+    }
 
     private IEnumerable<TItem> GetSorted()
     {
@@ -80,6 +118,8 @@
                 OrderByState.OrderBy.Add(orderBy);
             StateHasChanged();
         };
+        _editContext = new EditContext(new {});
+        _editContext.OnFieldChanged += (sender, args) => Console.WriteLine($"Field changed! {args.FieldIdentifier.Model}");
     }
 
     protected override void OnParametersSet()

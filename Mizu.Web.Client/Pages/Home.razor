@@ -1,10 +1,22 @@
 ﻿@page "/"
+@using System.ComponentModel.DataAnnotations
 @rendermode InteractiveWebAssembly
 
 <PageTitle>Counter</PageTitle>
 
 <h1>Home</h1>
 
+<div class="panel">
+    <header class="heading">
+        <span>TODOs</span>
+    </header>
+    <ol>
+        <li>Collapsible Left Nav</li>
+        <li>Toaster</li>
+        <li>Grouping Grid Items?</li>
+    </ol>
+</div>
+<br/>
 <div class="panel">
     <header class="heading">
         <i>Icon</i>
@@ -16,40 +28,121 @@
             <GridColumnHeader Name="Description"/>
             <GridColumnHeader Name="Quantity" Sort="x => x.Price"/>
             <GridColumnHeader Name="Price"/>
+            <GridColumnHeader />
         </Header>
         <RowTemplate Context="workItem">
-            <span>@workItem.Code</span>
-            <span>@workItem.Description</span>
-            <span>@workItem.Quantity</span>
-            <span>@workItem.Price</span>
+            <Editable Item="workItem" OnActionCompleted="OnActionCompleted" TItem="WorkItem">
+                <ReadTemplate>
+                    <span>@workItem.Code</span>
+                    <span>@workItem.Description</span>
+                    <span>@workItem.Quantity</span>
+                    <span>@workItem.Price</span>
+                </ReadTemplate>
+                <EditTemplate Context="updatedItem">
+                    <div>
+                        <InputText type="text" @bind-Value="@updatedItem.Code"/>
+                        <ValidationMessage For="() => updatedItem.Code"/>
+                    </div>
+                    <input type="text" @bind="updatedItem.Description" @bind:event="oninput" />
+                    <div>
+                        <InputNumber @bind-Value="@updatedItem.Quantity"/>
+                        <ValidationMessage For="() => updatedItem.Quantity"/>
+                    </div>
+                    <input type="number" @bind="updatedItem.Price" @bind:event="oninput" />
+                </EditTemplate>
+            </Editable>
         </RowTemplate>
     </DataGrid>
+    <Paginator Pagination="_pagination" />
 </div>
 
-<Paginator Pagination="_pagination" />
+<div class="panel">
+    <h3 class="heading">Grouped Work Items</h3>
+    <DataGrid Items="_data" Pagination="_pagination2" GroupBy="GroupBy">
+        <Header>
+            <GridColumnHeader Name="Code"/>
+            <GridColumnHeader Name="Description"/>
+            <GridColumnHeader Name="Quantity" Sort="x => x.Price"/>
+            <GridColumnHeader Name="Price"/>
+            <GridColumnHeader />
+        </Header>
+        <RowTemplate Context="workItem">
+            <Editable OnActionCompleted="OnActionCompleted" TItem="WorkItem">
+                <ReadTemplate>
+                    <span>@workItem.Code</span>
+                    <span>@workItem.Description</span>
+                    <span>@workItem.Quantity</span>
+                    <span>@workItem.Price</span>
+                </ReadTemplate>
+                <EditTemplate Context="updatedItem">
+                    <div>
+                        <InputText type="text" @bind-Value="@updatedItem.Code"/>
+                        <ValidationMessage For="() => updatedItem.Code"/>
+                    </div>
+                    <input type="text" @bind="updatedItem.Description" @bind:event="oninput" />
+                    <div>
+                        <InputNumber @bind-Value="@updatedItem.Quantity"/>
+                        <ValidationMessage For="() => updatedItem.Quantity"/>
+                    </div>
+                    <input type="number" @bind="updatedItem.Price" @bind:event="oninput" />
+                </EditTemplate>
+            </Editable>
+        </RowTemplate>
+    </DataGrid>
+    <Paginator Pagination="_pagination2" />
+</div>
+
 
 @code {
 
-    record WorkItem(string Code, string Description, int Quantity, decimal Price);
+    record WorkItem(string Code, string Description, int Quantity, decimal Price, string GroupName)
+    {
+        [Required]
+        public string Code { get; set; } = Code;
+        public string Description { get; set; } = Description;
+        
+        [Range(1, int.MaxValue, ErrorMessage = "Quantity must be greater than 0")]
+        public int Quantity { get; set; } = Quantity;
+        public decimal Price { get; set; } = Price;
+        public string GroupName { get; set; } = GroupName;
+        
+        public Guid Id { get; } = Guid.NewGuid();
+    };
     
     Paginator.PaginationState _pagination = new()
     {
         PageSize = 5
     };
-
-    readonly IQueryable<WorkItem> _data = new List<WorkItem>
+    
+    Paginator.PaginationState _pagination2 = new()
     {
-        new WorkItem("A", "Item A", 1, 10),
-        new WorkItem("B", "Item B", 2, 20),
-        new WorkItem("C", "Item C", 3, 30),
-        new WorkItem("D", "Item D", 4, 40),
-        new WorkItem("E", "Item E", 5, 50),
-        new WorkItem("F", "Item F", 6, 60),
-        new WorkItem("G", "Item G", 7, 70),
-        new WorkItem("H", "Item H", 8, 80),
-        new WorkItem("I", "Item I", 9, 90),
-        new WorkItem("J", "Item J", 10, 100),
-        new WorkItem("K", "Item K", 11, 110),
-    }.AsQueryable();
+        PageSize = 5
+    };
 
+    IEnumerable<WorkItem> _data = new List<WorkItem>
+    {
+        new WorkItem("A", "Item A", 1, 10, "Group 1"),
+        new WorkItem("B", "Item B", 2, 20, "Group 1"),
+        new WorkItem("C", "Item C", 3, 30, "Group 2"),
+        new WorkItem("D", "Item D", 4, 40, "Group 2"),
+        new WorkItem("E", "Item E", 5, 50 , "Group 3"),
+        new WorkItem("F", "Item F", 6, 60, "Group 3"),
+        new WorkItem("G", "Item G", 7, 70, "Group 4"),
+        new WorkItem("H", "Item H", 8, 80, "Group 4"),
+        new WorkItem("I", "Item I", 9, 90, "Group 5"),
+        new WorkItem("J", "Item J", 10, 100, "Group 5"),
+        new WorkItem("K", "Item K", 11, 110, "Group 6"),
+    };
+    
+    Func<WorkItem, string> GroupBy = x => x.GroupName;
+
+    private void OnActionCompleted(OnActionCompletedArgs<WorkItem> args)
+    {
+        _data = args.ActionType switch
+        {
+            ActionType.Save => _data.Select(x => x.Id == args.Data.Id ? args.Data : x).ToList(),
+            ActionType.Delete => _data.Where(x => x.Id != args.Data.Id).ToList(),
+            _ => _data
+        };
+    }
 }
