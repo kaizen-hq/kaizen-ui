@@ -1,13 +1,19 @@
 :root {
-    --gray-1: #f8f9fa;
-    --blue-1: #007bff;
-    --red-1: #dc3545;
-    --red-9: #f8d7da;
-    --size-1: 0.5rem;
-    --size-2: 1rem;
-    --size-3: 1.5rem;
-    --size-4: 2rem;
-    --font-size-01: 0.8rem;
+    --gray-1: hsl(210, 17%, 98%);
+    --blue-1: hsl(209, 100%, 38%);
+    --blue-3: hsl(209, 100%, 50%);
+    --red-1: hsl(358, 75%, 59%);
+    --red-9: hsl(358, 75%, 97%);
+    --green-9: #2b8a3e;
+    --yellow-9: #e67700;
+    --size-1: 0.25rem;
+    --size-2: 0.5rem;
+    --size-3: 0.75rem;
+    --size-4: 1rem;
+    --font-size-01: 0.6875rem;
+    --font-size-1: 1rem;
+    --radius-3: 1rem;
+    --layer-important: 1000;
 }
 
 .panel {

@@ -1,3 +1,4 @@
+using Mizu.UI;
 using Mizu.Web.Client.Pages;
 using Mizu.Web.Components;
 
@@ -6,6 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
+
+builder.Services.AddScoped<ToastService>();
 
 var app = builder.Build();
 

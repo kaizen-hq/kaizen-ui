@@ -1,8 +1,12 @@
 ﻿@page "/"
 @using System.ComponentModel.DataAnnotations
+@using Mizu.UI
 @rendermode InteractiveWebAssembly
+@inject ToastService Toast
 
 <PageTitle>Counter</PageTitle>
+
+<Toaster />
 
 <h1>Home</h1>
 
@@ -144,5 +148,12 @@
             ActionType.Delete => _data.Where(x => x.Id != args.Data.Id).ToList(),
             _ => _data
         };
+        var message = args.ActionType switch
+        {
+            ActionType.Save => "Work Item Saved",
+            ActionType.Delete => "Work Item Deleted",
+            _ => ""
+        };
+        Toast.ShowToast(message, ToastLevel.Success);
     }
 }

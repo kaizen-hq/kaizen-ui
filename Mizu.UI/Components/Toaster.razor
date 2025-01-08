@@ -1,0 +1,61 @@
+﻿@inject ToastService ToastService
+
+<div id="toast" class="@BackgroundCssClass">
+    <div id="img" class="@Mode">
+        <LucideIcon Name="@IconCssClass"></LucideIcon>
+    </div>
+    <div id="desc">
+        <span>@Message</span>
+    </div>
+</div>
+
+@code
+{
+
+    protected string Message { get; set; } = "";
+    protected bool IsVisible { get; set; }
+    public string BackgroundCssClass { get; set; } = "";
+    protected string IconCssClass { get; set; } = "thumbs-up";
+
+    public string Mode { get; set; } = "";
+
+    protected override void OnInitialized()
+    {
+        ToastService.OnShow += ShowToast;
+        ToastService.OnHide += HideToast;
+    }
+
+    private async void ShowToast(string message, ToastLevel level)
+    {
+        BuildToastSettings(level, message);    
+        IsVisible = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async void HideToast()
+    {
+        BackgroundCssClass = "";
+        Mode = "";
+        IconCssClass = "";
+        IsVisible = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void BuildToastSettings(ToastLevel level, string message)
+    {
+        (Mode, IconCssClass) = level switch
+        {
+            ToastLevel.Success => ("success", "thumbs-up"),
+            ToastLevel.Error => ("error", "x"),
+            _ => ("success", "thumbs-up")
+            };
+        Message = message;
+        BackgroundCssClass = $"{Mode} show";
+    }
+
+    public void Dispose()
+    {
+        ToastService.OnShow -= ShowToast;
+        ToastService.OnHide -= HideToast;
+    }
+}
