@@ -1,9 +1,31 @@
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --header-background: #fff;
+    --left-nav-background: linear-gradient(
+            180deg,
+            #FF4A39 0%,    /* Brighter red-orange matching logo */
+            #FF3322 100%   /* Slightly darker shade for depth */
+    );
 }
 
 a, .btn-link {
     color: #006bb7;
+}
+
+.layout > header {
+    background-color: var(--header-background);
+    color: white;
+    padding: var(--size-2);
+    height: 64px;
+    border-bottom: 1px solid #aaa;
+}
+
+.logo {
+    display: inline-block;
+    height: 100%;
+    width: 240px;
+    background: url("/solid.png") no-repeat center center; 
+    background-size: contain;
 }
 
 .blazor-error-boundary {

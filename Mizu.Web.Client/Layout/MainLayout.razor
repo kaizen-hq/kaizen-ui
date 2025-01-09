@@ -1,0 +1,33 @@
+﻿@inherits LayoutComponentBase
+
+<div class="layout">
+    <header>
+        <a href="/" class="logo"></a>
+    </header>
+    <aside>
+        <LeftNavWrapper @rendermode="InteractiveWebAssembly" />
+    </aside>
+    <main>
+        @Body
+    </main>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>
+
+@code {
+
+    readonly List<LeftNavigationBar.NavItem> _navItems =
+    [
+        new LeftNavigationBar.NavItem()
+        {
+            Href = "/",
+            Icon = @<LucideIcon Name="@LucideIcon.Home" />,
+            Text = "Home"
+        }
+    ];
+
+}

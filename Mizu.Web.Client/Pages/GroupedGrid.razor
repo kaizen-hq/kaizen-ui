@@ -1,0 +1,93 @@
+@page "/GroupedGrid"
+@using Mizu.UI
+@using System.ComponentModel.DataAnnotations
+@inject ToastService Toast
+
+<DataGrid Items="_data" Pagination="_pagination" GroupBy="_groupBy">
+    <Header>
+        <GridColumnHeader Name="Code"/>
+        <GridColumnHeader Name="Description"/>
+        <GridColumnHeader Name="Quantity" Sort="x => x.Price"/>
+        <GridColumnHeader Name="Price"/>
+        <GridColumnHeader />
+    </Header>
+    <RowTemplate Context="workItem">
+        <Editable Item="workItem" OnActionCompleted="OnActionCompleted" TItem="WorkItem">
+            <ReadTemplate>
+                <span>@workItem.Code</span>
+                <span>@workItem.Description</span>
+                <span>@workItem.Quantity</span>
+                <span>@workItem.Price</span>
+            </ReadTemplate>
+            <EditTemplate Context="updatedItem">
+                <div>
+                    <InputText type="text" @bind-Value="@updatedItem.Code"/>
+                    <ValidationMessage For="() => updatedItem.Code"/>
+                </div>
+                <input type="text" @bind="updatedItem.Description" @bind:event="oninput" />
+                <div>
+                    <InputNumber @bind-Value="@updatedItem.Quantity"/>
+                    <ValidationMessage For="() => updatedItem.Quantity"/>
+                </div>
+                <input type="number" @bind="updatedItem.Price" @bind:event="oninput" />
+            </EditTemplate>
+        </Editable>
+    </RowTemplate>
+</DataGrid>
+<Paginator Pagination="_pagination" />
+
+@code {
+
+    record WorkItem(string Code, string Description, int Quantity, decimal Price, string GroupName)
+    {
+        [Required(ErrorMessage = "Code is required")]
+        public string Code { get; set; } = Code;
+        public string Description { get; set; } = Description;
+        
+        [Range(1, int.MaxValue, ErrorMessage = "Quantity must be greater than 0")]
+        public int Quantity { get; set; } = Quantity;
+        public decimal Price { get; set; } = Price;
+        public string GroupName { get; set; } = GroupName;
+        
+        public Guid Id { get; } = Guid.NewGuid();
+    };
+    
+    Paginator.PaginationState _pagination = new()
+    {
+        PageSize = 5
+    };
+    
+    IEnumerable<WorkItem> _data = new List<WorkItem>
+    {
+        new("A", "Item A", 1, 10, "Group 1"),
+        new("B", "Item B", 2, 20, "Group 1"),
+        new("C", "Item C", 3, 30, "Group 2"),
+        new("D", "Item D", 4, 40, "Group 2"),
+        new("E", "Item E", 5, 50 , "Group 3"),
+        new("F", "Item F", 6, 60, "Group 3"),
+        new("G", "Item G", 7, 70, "Group 4"),
+        new("H", "Item H", 8, 80, "Group 4"),
+        new("I", "Item I", 9, 90, "Group 5"),
+        new("J", "Item J", 10, 100, "Group 5"),
+        new("K", "Item K", 11, 110, "Group 6"),
+    };
+
+    readonly Func<WorkItem, string> _groupBy = x => x.GroupName;
+
+    private void OnActionCompleted(OnActionCompletedArgs<WorkItem> args)
+    {
+        _data = args.ActionType switch
+        {
+            ActionType.Save => _data.Select(x => x.Id == args.Data.Id ? args.Data : x).ToList(),
+            ActionType.Delete => _data.Where(x => x.Id != args.Data.Id).ToList(),
+            _ => _data
+        };
+        var message = args.ActionType switch
+        {
+            ActionType.Save => "Work Item Saved",
+            ActionType.Delete => "Work Item Deleted",
+            _ => ""
+        };
+        Toast.ShowToast(message, ToastLevel.Success);
+    }
+}
