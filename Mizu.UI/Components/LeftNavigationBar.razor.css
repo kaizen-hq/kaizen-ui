@@ -1,6 +1,6 @@
 .nav-container {
     width: 250px;
-    height: 100vh;
+    height: calc(100vh - var(--header-height));
     background: var(--left-nav-background, linear-gradient(180deg, rgb(0, 0, 0, .85) 60%, #3B7238 100%));
     transition: width 0.3s ease;
     position: relative;
