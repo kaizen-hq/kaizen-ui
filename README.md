@@ -26,7 +26,7 @@ Kaizen.UI is a Blazor component library providing reusable UI components and pat
 #### MainLayout
 A responsive layout component with header, sidebar, and main content areas.
 
-```razor
+```html
 @inherits LayoutComponentBase
 
 <Toaster />
@@ -49,7 +49,7 @@ A responsive layout component with header, sidebar, and main content areas.
 #### DataGrid
 A grid with configuration options for sorting and grouping
 
-```razor
+```html
 <DataGrid Items="_data" Pagination="_pagination" GroupBy="_groupBy">
     <Header>
         <GridColumnHeader Name="Code"/>
@@ -71,7 +71,7 @@ A grid with configuration options for sorting and grouping
 #### DataGrid with Inline Editing
 A grid with inline editing and validation.
 
-```razor
+```html
 <DataGrid Items="_data" Pagination="_pagination" GroupBy="_groupBy">
     <Header>
         <GridColumnHeader Name="Code"/>
@@ -115,7 +115,7 @@ A toast notification system for displaying alerts and messages.
 builder.Services.AddSingleton<ToastService>();
 ```
 
-```razor
+```csharp
 @inject ToastService Toast
 <Toaster />
 
@@ -131,7 +131,7 @@ builder.Services.AddSingleton<ToastService>();
 #### Panel
 A container component with optional header for grouping related content.
 
-```razor
+```html
 <div class="panel">
     <header class="heading">
         <span>Panel Title</span>
