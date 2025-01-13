@@ -11,4 +11,5 @@ button {
     padding: var(--size-1);
     cursor: pointer;
     color: var(--blue-1);
+    font-size: 24px;
 }

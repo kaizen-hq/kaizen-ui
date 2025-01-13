@@ -35,7 +35,6 @@ html, body {
         "header header"
         "aside main"
         "footer footer";
-    column-gap: var(--size-4);
     margin: 0;
     padding: 0;
     transition: grid-template-columns 0.3s ease;
@@ -50,6 +49,7 @@ main {
     grid-area: main;
     overflow: auto;
     max-height: calc(100vh - var(--header-height));
+    padding: 0 var(--size-4);
 }
 
 header {

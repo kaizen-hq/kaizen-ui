@@ -6,10 +6,10 @@
     @EditTemplate(_itemCopy)
     <div class="actions">
         <button @onclick="Save">
-            <LucideIcon Name="@LucideIcon.Save" />
+            <Blazicon Svg="Lucide.Save" />
         </button>
         <button @onclick="CancelEditMode">
-            <LucideIcon Name="@LucideIcon.X" />
+            <Blazicon Svg="Lucide.X" />
         </button>
     </div>
 }
@@ -18,10 +18,10 @@ else
     @ReadTemplate
     <div class="actions">
         <button @onclick="StartEditMode">
-            <LucideIcon Name="@LucideIcon.Pencil" />
+            <Blazicon Svg="Lucide.Pencil" />
         </button>
         <button @onclick="Delete">
-            <LucideIcon Name="@LucideIcon.Trash2" />
+            <Blazicon Svg="Lucide.Trash2" />
         </button>
     </div>
 }

@@ -25,8 +25,8 @@
     private bool IsCollapsed { get; set; }
     
     private RenderFragment NavToggle => IsCollapsed ?
-        @<LucideIcon Name="@LucideIcon.ChevronRight" /> :
-        @<LucideIcon Name="@LucideIcon.ChevronLeft" />;
+        @<Blazicon Svg="Lucide.ChevronRight" /> :
+        @<Blazicon Svg="Lucide.ChevronLeft" />;
 
     private void ToggleNav()
     {
