@@ -147,7 +147,7 @@ A container component with optional header for grouping related content.
 
 ## Other Projects
 
-This project uses Blazicons.Lucide for icons.  More on that [here](https://github.com/kyleherzog/Blazicons.Lucide?tab=readme-ov-file).
+This project uses `Blazicons.Lucide` for icons.  More on that [here](https://github.com/kyleherzog/Blazicons.Lucide?tab=readme-ov-file).
 
 ## Contributing
 
