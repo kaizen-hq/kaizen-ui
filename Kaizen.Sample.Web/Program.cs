@@ -1,6 +1,5 @@
+using Kaizen.Sample.Web.Components;
 using Kaizen.UI;
-using Mizu.Web.Client.Pages;
-using Mizu.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +33,6 @@ app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(Mizu.Web.Client._Imports).Assembly);
+    .AddAdditionalAssemblies(typeof(Kaizen.Sample.Web.Client._Imports).Assembly);
 
 app.Run();

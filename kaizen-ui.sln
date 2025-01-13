@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mizu.Web", "Mizu.Web\Mizu.Web.csproj", "{AB6872F0-21EF-4923-A86B-1290B11353F3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kaizen.Sample.Web", "Kaizen.Sample.Web\Kaizen.Sample.Web.csproj", "{AB6872F0-21EF-4923-A86B-1290B11353F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mizu.Web.Client", "Mizu.Web.Client\Mizu.Web.Client.csproj", "{160A97CA-F8B9-4F54-9527-66FA5E00CCB9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kaizen.Sample.Web.Client", "Kaizen.Sample.Web.Client\Kaizen.Sample.Web.Client.csproj", "{160A97CA-F8B9-4F54-9527-66FA5E00CCB9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mizu.UI", "Mizu.UI\Mizu.UI.csproj", "{670D633A-0211-477C-951E-07B05C358418}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kaizen.UI", "Kaizen.UI\Kaizen.UI.csproj", "{670D633A-0211-477C-951E-07B05C358418}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
