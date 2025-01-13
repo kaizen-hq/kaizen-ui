@@ -2,6 +2,8 @@
 
 Kaizen.UI is a Blazor component library providing reusable UI components and patterns for building web applications.
 
+![Example](./example.png)
+
 ## Installation
 
 1. Copy the `Kaizen.UI` project into your solution
@@ -14,7 +16,7 @@ Kaizen.UI is a Blazor component library providing reusable UI components and pat
     <link rel="stylesheet" href="@Assets["_content/Kaizen.UI/kaizen-ui.css"]" />
     ```
 4. Add the following to your `_Imports.razor` file:
-    ```razor
+    ```html
     @using Kaizen.UI.Components
     @using Blazicons
     ```
