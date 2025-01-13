@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Mizu.UI\Mizu.UI.csproj" />
+    <ProjectReference Include="..\Kaizen.UI\Kaizen.UI.csproj" />
   </ItemGroup>
 
   <ItemGroup>

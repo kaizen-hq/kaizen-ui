@@ -1,6 +1,6 @@
 ﻿using System.Timers;
 
-namespace Mizu.UI;
+namespace Kaizen.UI;
 public enum ToastLevel
 {
     Info,

@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
-namespace Mizu.UI.Components
+namespace Kaizen.UI.Components
 {
     public record OrderBy<TSource, TKey>(string Name, bool Descending, Expression<Func<TSource, TKey>> SortFunc);
 

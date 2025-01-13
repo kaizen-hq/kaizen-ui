@@ -1,4 +1,4 @@
-using Mizu.UI;
+using Kaizen.UI;
 using Mizu.Web.Client.Pages;
 using Mizu.Web.Components;
 

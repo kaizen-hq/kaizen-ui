@@ -1,4 +1,4 @@
-namespace Mizu.UI.Components;
+namespace Kaizen.UI.Components;
 
 public enum ActionType
 {
