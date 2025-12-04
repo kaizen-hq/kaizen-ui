@@ -1,6 +1,6 @@
 ﻿@inject ToastService ToastService
 
-<div id="toast" class="@BackgroundCssClass">
+<div id="toast" class="@BackgroundCssClass" style="@AnimationStyle">
     <div id="img" class="@Mode">
         <Blazicon Svg="@IconSvg"></Blazicon>
     </div>
@@ -16,8 +16,8 @@
     protected bool IsVisible { get; set; }
     public string BackgroundCssClass { get; set; } = "";
     protected SvgIcon IconSvg { get; set; } = Lucide.ThumbsUp;
-
     public string Mode { get; set; } = "";
+    public string AnimationStyle { get; set; } = "";
 
     protected override void OnInitialized()
     {
@@ -25,9 +25,18 @@
         ToastService.OnHide += HideToast;
     }
 
-    private async void ShowToast(string message, ToastLevel level)
+    private async void ShowToast(string message, ToastLevel level, int durationMs)
     {
-        BuildToastSettings(level, message);    
+        // First hide to reset animation
+        BackgroundCssClass = "";
+        AnimationStyle = "";
+        await InvokeAsync(StateHasChanged);
+
+        // Small delay to force browser to recognize the class change
+        await Task.Delay(100);
+
+        // Now show with new message and dynamic animation
+        BuildToastSettings(level, message, durationMs);
         IsVisible = true;
         await InvokeAsync(StateHasChanged);
     }
@@ -35,13 +44,11 @@
     private async void HideToast()
     {
         BackgroundCssClass = "";
-        Mode = "";
-        IconSvg = Lucide.ThumbsUp;
         IsVisible = false;
         await InvokeAsync(StateHasChanged);
     }
 
-    private void BuildToastSettings(ToastLevel level, string message)
+    private void BuildToastSettings(ToastLevel level, string message, int durationMs)
     {
         (Mode, IconSvg) = level switch
         {
@@ -51,6 +58,25 @@
         };
         Message = message;
         BackgroundCssClass = $"{Mode} show";
+
+        // Calculate animation timings based on duration
+        // Animation phases: fadein(0.5s) -> expand(0.5s) -> stay -> shrink(0.5s) -> fadeout(0.5s)
+        var totalSeconds = durationMs / 1000.0;
+        var fadeInDuration = 0.5;
+        var expandDuration = 0.5;
+        var shrinkDuration = 0.5;
+        var fadeOutDuration = 0.5;
+        var stayDuration = totalSeconds - fadeInDuration - expandDuration - shrinkDuration - fadeOutDuration;
+
+        // Ensure stay duration is at least 0
+        if (stayDuration < 0) stayDuration = 0;
+
+        var expandStart = fadeInDuration;
+        var stayStart = expandStart + expandDuration;
+        var shrinkStart = stayStart + stayDuration;
+        var fadeOutStart = shrinkStart + shrinkDuration;
+
+        AnimationStyle = $"animation: fadein {fadeInDuration}s, expand {expandDuration}s {expandStart}s, stay {stayDuration}s {stayStart}s, shrink {shrinkDuration}s {shrinkStart}s, fadeout {fadeOutDuration}s {fadeOutStart}s;";
     }
 
     public void Dispose()

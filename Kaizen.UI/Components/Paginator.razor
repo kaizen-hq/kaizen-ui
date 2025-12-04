@@ -3,15 +3,18 @@
     <div class="page-number">
         Page @(Pagination.PageNumber + 1) of @(Pagination.NumberOfPages + 1)
     </div>
-    <div class="page-size">
-        <label for="page-size">Page Size</label>
-        <select id="page-size" value="@Pagination.PageSize" @onchange="OnPageSizeChange">
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-        </select>
-    </div>
+    @if (CanChangePageSize) 
+    {
+        <div class="page-size">
+            <label for="page-size">Page Size</label>
+            <select id="page-size" value="@Pagination.PageSize" @onchange="OnPageSizeChange">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+            </select>
+        </div>
+    }
     <div class="page-buttons">
         <button type="button" @onclick="FirstPage">
             <Blazicon Svg="Lucide.ChevronsLeft" />
@@ -33,6 +36,9 @@
     [Parameter]
     [NotNull]
     public PaginationState? Pagination { get; set; }
+
+    [Parameter]
+    public bool CanChangePageSize { get; set; } = false;
 
     void OnPageSizeChange(ChangeEventArgs e)
     {

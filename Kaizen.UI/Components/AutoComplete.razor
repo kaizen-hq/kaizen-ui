@@ -1,0 +1,141 @@
+<div class="autocomplete-container">
+    <div class="autcomplete-text-container">
+        <input type="text"
+            value="@_search"
+            @oninput="OnInput"
+            @onkeydown="HandleKeyDown"
+            @onkeydown:preventDefault="@_preventDefaultKeyDown"
+            placeholder="@Placeholder"/>
+        <a class="clear-button" @onclick="ClearText" @onclick:stopPropagation="true">
+           <Blazicon Svg="Lucide.CircleX" />
+        </a>
+    </div>
+
+    @if (_searchResults.Any())
+    {
+        <div class="search-results">
+            @for (int i = 0; i < _searchResults.Count(); i++)
+            {
+                var index = i;
+                var result = _searchResults.ElementAt(i);
+                var isSelected = index == _selectedIndex;
+                <div class="search-result @(isSelected ? "selected" : "")" @onclick="() => CallSelectItem(result)">
+                    @((MarkupString)HighlightMatch(result))
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+
+    [Parameter]
+    public string Value { get; set; } = "";
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+
+    [Parameter]
+    public IEnumerable<string> DataSource { get; set; } = Enumerable.Empty<string>();
+
+    [Parameter]
+    public string Placeholder { get; set; } = "";
+
+    private string _search = "";
+    private IEnumerable<string> _searchResults { get; set; } = Enumerable.Empty<string>();
+    private int _selectedIndex = -1;
+    private bool _preventDefaultKeyDown = false;
+
+    protected override void OnParametersSet()
+    {
+        _search = Value;
+    }
+
+    private async Task ClearText()
+    {
+        _search = string.Empty;
+        _selectedIndex = -1;
+        _searchResults = Enumerable.Empty<string>();
+        await ValueChanged.InvokeAsync(_search);
+    }
+
+    private void OnInput(ChangeEventArgs e)
+    {
+        _search = e.Value?.ToString() ?? "";
+
+        if (string.IsNullOrWhiteSpace(_search))
+        {
+            _searchResults = Enumerable.Empty<string>();
+            _selectedIndex = -1;
+        }
+        else
+        {
+            _searchResults = DataSource
+                .Where(x => x.Contains(_search, StringComparison.OrdinalIgnoreCase))
+                .Take(10);
+            _selectedIndex = -1;
+        }
+
+        ValueChanged.InvokeAsync(_search);
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        _preventDefaultKeyDown = false;
+
+        if (e.Key == "ArrowDown" || e.Key == "ArrowUp")
+        {
+            _preventDefaultKeyDown = true;
+
+            if (!_searchResults.Any()) return;
+
+            if (e.Key == "ArrowDown")
+            {
+                _selectedIndex = _selectedIndex < 0 ? 0 : Math.Min(_selectedIndex + 1, _searchResults.Count() - 1);
+            }
+            else if (e.Key == "ArrowUp")
+            {
+                _selectedIndex = _selectedIndex < 0 ? 0 : Math.Max(_selectedIndex - 1, 0);
+            }
+        }
+        else if (e.Key == "Enter")
+        {
+            if (_selectedIndex >= 0 && _searchResults.Any())
+            {
+                _preventDefaultKeyDown = true;
+                var selected = _searchResults.ElementAt(_selectedIndex);
+                await CallSelectItem(selected);
+            }
+        }
+        else if (e.Key == "Escape")
+        {
+            _preventDefaultKeyDown = true;
+            _searchResults = Enumerable.Empty<string>();
+            _selectedIndex = -1;
+        }
+    }
+
+    private async Task CallSelectItem(string result)
+    {
+        _search = result;
+        _searchResults = Enumerable.Empty<string>();
+        _selectedIndex = -1;
+        await ValueChanged.InvokeAsync(result);
+    }
+
+    private string HighlightMatch(string text)
+    {
+        if (string.IsNullOrEmpty(_search)) return text;
+
+        var toLowerSearch = _search.ToLower();
+        var index = text.ToLower().IndexOf(toLowerSearch, StringComparison.Ordinal);
+
+        if (index == -1) return text;
+
+        return text[..index] + 
+            "<span class=\"highlight\">" + 
+            text[index..(index + toLowerSearch.Length)] + 
+            "</span>" + 
+            text[(index + toLowerSearch.Length)..];
+    }
+}

@@ -7,7 +7,8 @@
 
 button {
     background-color: var(--gray-1);
-    border: none;
+    border: 1px solid var(--gray-2);
+    border-radius: 4px;
     padding: var(--size-1);
     cursor: pointer;
     color: var(--blue-1);

@@ -1,0 +1,36 @@
+@using System.Diagnostics.CodeAnalysis
+
+@if (_isVisible)
+{
+    <div class="spinner-overlay">
+        <div class="spinner-container">
+            <div class="spinner"></div>
+            @if (!string.IsNullOrEmpty(Label))
+            {
+                <div class="spinner-label">@Label</div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string Label { get; set; } = "";
+
+    [Parameter]
+    public int Size { get; set; } = 50;
+
+    private bool _isVisible = false;
+
+    public async Task ShowAsync()
+    {
+        _isVisible = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async Task HideAsync()
+    {
+        _isVisible = false;
+        await InvokeAsync(StateHasChanged);
+    }
+}

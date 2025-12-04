@@ -1,7 +1,10 @@
 @typeparam TItem where TItem : class
 @using System.Diagnostics.CodeAnalysis
 
-@if (_isEditMode)
+@if (Readonly) {
+    @ReadTemplate
+}
+else if (_isEditMode && !Readonly)
 {
     @EditTemplate(_itemCopy)
     <div class="actions">
@@ -20,9 +23,12 @@ else
         <button @onclick="StartEditMode">
             <Blazicon Svg="Lucide.Pencil" />
         </button>
-        <button @onclick="Delete">
-            <Blazicon Svg="Lucide.Trash2" />
-        </button>
+        @if(CanDelete) 
+        {
+            <button @onclick="Delete">
+                <Blazicon Svg="Lucide.Trash2" />
+            </button>
+        }
     </div>
 }
 
@@ -38,6 +44,12 @@ else
     
     [Parameter]
     public EventCallback<OnActionCompletedArgs<TItem>> OnActionCompleted { get; set; }
+
+    [Parameter]
+    public bool Readonly { get; set; }
+
+    [Parameter]
+    public bool CanDelete { get; set; } = true;
     
     [Parameter]
     [NotNull]
@@ -60,7 +72,6 @@ else
         var memberwiseClone = typeof(object).GetMethod("MemberwiseClone",
             System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
 
-        Console.WriteLine($"item is: {Item}");
         // This should never fail, so I'm going to let it fly for now.
         _itemCopy = (TItem)memberwiseClone!.Invoke(Item, null)!;
         _isEditMode = true;
@@ -75,7 +86,7 @@ else
     
     private async Task Delete()
     {
-        await OnActionCompleted.InvokeAsync(new OnActionCompletedArgs<TItem>(ActionType.Delete, _itemCopy));
+        await OnActionCompleted.InvokeAsync(new OnActionCompletedArgs<TItem>(ActionType.Delete, Item));
     }
     
     private async Task Save()

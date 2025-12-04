@@ -1,5 +1,6 @@
 ﻿.grid-column-header a {
     cursor: pointer;
+    color: var(--blue-1);
 }
 
 .grid-column-header a:hover {

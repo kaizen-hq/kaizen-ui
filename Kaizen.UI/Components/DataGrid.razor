@@ -4,40 +4,82 @@
 @using System.Linq.Expressions
 @using System.Text
 
-<div class="santa-grid @(IsGrouped ? "grouped" : "")">
-    <div class="header">
-        <CascadingValue Value="OrderByState">
-            @Header
-        </CascadingValue>
+@if (OrderByState.ColumnAlignments.Any())
+{
+    <style>
+        @foreach (var alignment in OrderByState.ColumnAlignments)
+        {
+            // IsGrouped adds a GridColumnHeader that bumps the index up by one
+            var index = IsGrouped ? alignment.Key - 1 : alignment.Key;
+            @($".grid-{_gridId} .header > *:nth-child({index}),")
+            @($".grid-{_gridId} .item > *:nth-child({index}) {{")
+            @($"  text-align: {alignment.Value};")
+            @($"  justify-self: {alignment.Value};")
+            @("}")
+        }
+    </style>
+}
+
+<CascadingValue Value="this" IsFixed="true">
+    @Configuration
+</CascadingValue>
+
+<div class="santa-grid grid-@_gridId @(IsGrouped ? "grouped" : "")">
+    @if (IsGrouped || ToolbarContent is not null)
+    {
+        <div class="toolbar">
+            @if (IsGrouped)
+            {
+                <div class="group-sort-header">
+                    <Blazicon Svg="Lucide.Group" />
+                    <CascadingValue Value="OrderByState">
+                        <GridColumnHeader TItem="TItem" Name="@GroupByName" Sort="@ConvertToDynamic(GroupBy!)" />
+                        <WithInitialSort TItem="TItem" Name="@GroupByName" Sort="@ConvertToDynamic(GroupBy!)" />
+                    </CascadingValue>
+                </div>
+            }
+            <div class="toolbar-content">
+                @ToolbarContent
+            </div>
+        </div>
+    }
+    <div class="santa-grid-scroll-container">
+        <div class="santa-grid-content">
+            <div class="header" hidden="@(HideHeader)">
+                <CascadingValue Value="OrderByState">
+                    @Header
+                </CascadingValue>
+            </div>
+            <EditForm EditContext="_editContext">
+                <DataAnnotationsValidator />
+                @if (IsGrouped)
+                {
+                    @foreach (var group in Query.GroupBy(GroupBy!.Compile()))
+                    {
+                        <div class="group">
+                            <ExpandableRow Title="@group.Key">
+                                @foreach(var item in group)
+                                {
+                                    <div class="@GetRowCssClass(item)" @onclick="() => OnRowClick(item)">
+                                        @RowTemplate(item)
+                                    </div>
+                                }
+                            </ExpandableRow>
+                        </div>
+                    }
+                }
+                else
+                {
+                    @foreach (var item in Query)
+                    {
+                        <div class="@GetRowCssClass(item)" @onclick="() => OnRowClick(item)">
+                            @RowTemplate(item)
+                        </div>
+                    }
+                }
+            </EditForm>
+        </div>
     </div>
-    <EditForm EditContext="_editContext">
-        <DataAnnotationsValidator />
-        @if (IsGrouped) 
-        {
-            @foreach (var group in Query.GroupBy(GroupBy!))
-            {
-                <div class="group">
-                    <ExpandableRow Title="@group.Key">
-                        @foreach(var item in group)
-                        {
-                            <div class="@GetRowCssClass(item)">
-                                @RowTemplate(item)
-                            </div>
-                        }
-                    </ExpandableRow>
-                </div>
-            }
-        }
-        else
-        {
-            @foreach (var item in Query)
-            {
-                <div class="@GetRowCssClass(item)">
-                    @RowTemplate(item)
-                </div>
-            }
-        }
-    </EditForm>
 </div>
 
 @code {
@@ -54,17 +96,51 @@
     public RenderFragment<TItem>? RowTemplate { get; set; }
 
     [Parameter]
+    public RenderFragment? Configuration { get; set; }
+
+    [Parameter]
     public Paginator.PaginationState? Pagination { get; set; }
 
     [Parameter]
     public Func<TItem, string> RowCssClass { get; set; } = (item) => "";
-    
+
     [Parameter]
-    public Func<TItem, string>? GroupBy { get; set; }
+    public Expression<Func<TItem, string>>? GroupBy { get; set; }
+
+    [Parameter]
+    public bool HideHeader { get; set; } = false;
+
+    [Parameter]
+    public RenderFragment? ToolbarContent { get; set; }
 
     private OrderByState<TItem, dynamic> OrderByState { get; } = new();
     private EditContext? _editContext;
     private bool IsGrouped => GroupBy is not null;
+    private string _gridId = Guid.NewGuid().ToString("N");
+    private TItem? _selectedItem;
+    internal EventCallback<TItem>? RowSelectedCallback { get; set; }
+
+    private string GroupByName => GroupBy != null ? GetPropertyName(GroupBy) : "Group";
+
+    private string GetPropertyName(Expression<Func<TItem, string>> expression)
+    {
+        if (expression.Body is MemberExpression memberExpression)
+        {
+            var displayAttribute = memberExpression.Member
+                .GetCustomAttributes(typeof(System.ComponentModel.DataAnnotations.DisplayAttribute), false)
+                .FirstOrDefault() as System.ComponentModel.DataAnnotations.DisplayAttribute;
+
+            return displayAttribute?.Name ?? memberExpression.Member.Name;
+        }
+        return "Group";
+    }
+
+    private Expression<Func<TItem, dynamic>> ConvertToDynamic(Expression<Func<TItem, string>> expression)
+    {
+        var param = expression.Parameters[0];
+        var body = Expression.Convert(expression.Body, typeof(object));
+        return Expression.Lambda<Func<TItem, dynamic>>(body, param);
+    }
 
     IEnumerable<TItem> Query => Pagination is null 
         ? GetSorted() 
@@ -76,7 +152,20 @@
         classes.Add("item");
         if (!string.IsNullOrEmpty(RowCssClass(item)))
             classes.Add(RowCssClass(item));
+        if (RowSelectedCallback.HasValue)
+            classes.Add("clickable");
+        if (_selectedItem != null && EqualityComparer<TItem>.Default.Equals(item, _selectedItem))
+            classes.Add("selected");
         return string.Join(" ", classes);
+    }
+
+    private async Task OnRowClick(TItem item)
+    {
+        if (RowSelectedCallback.HasValue)
+        {
+            _selectedItem = item;
+            await RowSelectedCallback.Value.InvokeAsync(item);
+        }
     }
 
     private IEnumerable<TItem> GetSorted()
@@ -118,6 +207,13 @@
                 OrderByState.OrderBy.Add(orderBy);
             StateHasChanged();
         };
+
+        OrderByState.RegisterAlignment = (columnIndex, alignment) =>
+        {
+            OrderByState.ColumnAlignments[columnIndex] = alignment;
+            StateHasChanged();
+        };
+
         _editContext = new EditContext(new {});
         _editContext.OnFieldChanged += (sender, args) => Console.WriteLine($"Field changed! {args.FieldIdentifier.Model}");
     }
@@ -128,8 +224,16 @@
         {
             Pagination.NumberOfPages = (int)Math.Ceiling((decimal)(Items!.Count() / Pagination.PageSize));
             Pagination.TotalItems = Items?.Count() ?? 0;
+            Pagination.PageNumber = 0;
             Pagination.Notify();
         }
+    }
+
+    public void ResetColumns()
+    {
+        OrderByState.ColumnAlignments.Clear();
+        OrderByState.ColumnCounter = 0;
+        StateHasChanged();
     }
 
 }

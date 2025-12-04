@@ -1,0 +1,44 @@
+@typeparam TItem
+
+<div class="search-box">
+    <div class="search-icon">
+        <Blazicon Svg="Lucide.Search" />
+    </div>
+    <input type="text"
+           class="@CssClass"
+           placeholder="@Placeholder"
+           value="@Value"
+           @oninput="OnInput" />
+    @if (!string.IsNullOrWhiteSpace(Value))
+    {
+        <button type="button" class="clear-button" @onclick="Clear">
+            <Blazicon Svg="Lucide.X" />
+        </button>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string Value { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+
+    [Parameter]
+    public string Placeholder { get; set; } = "Search...";
+
+    [Parameter]
+    public string CssClass { get; set; } = "k-input";
+
+    private async Task OnInput(ChangeEventArgs e)
+    {
+        Value = e.Value?.ToString() ?? string.Empty;
+        await ValueChanged.InvokeAsync(Value);
+    }
+
+    private async Task Clear()
+    {
+        Value = string.Empty;
+        await ValueChanged.InvokeAsync(Value);
+    }
+}

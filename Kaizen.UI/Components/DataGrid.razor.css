@@ -1,13 +1,43 @@
 ﻿.santa-grid {
     margin-top: var(--size-3);
+    --grid-border-color: #ddd;
+    --group-left-padding: var(--size-6);
+    border: 1px solid var(--grid-border-color);
 }
 
-.santa-grid {
-    border: 1px solid #aaa;
+.santa-grid-scroll-container {
+    overflow-x: auto;
+}
+
+.santa-grid-content {
+    min-width: min-content;
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--gray-1);
+    border-bottom: 1px solid var(--grid-border-color);
+    padding: var(--size-1) var(--size-2);
+}
+
+.group-sort-header {
+    display: flex;
+    align-items: center;
+    gap: var(--size-2);
+}
+
+.toolbar-content {
+    margin-left: auto;
+    display: flex;
+    gap: var(--size-1);
+    align-items: center;
+    justify-content: flex-end;
 }
 
 .santa-grid .item {
-    border-top: 1px solid #aaa;
+    border-top: 1px solid var(--grid-border-color);
 }
 
 .header {
@@ -15,6 +45,11 @@
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     gap: var(--size-1);
     font-weight: bold;
+    background-color: var(--gray-1);
+}
+
+.header > ::deep * {
+    padding: var(--size-2);
 }
 
 .item {
@@ -26,20 +61,48 @@
     background: white;
 }
 
-.santa-grid .item:nth-child(even) {
+.item > ::deep * {
+    padding: var(--size-2);
+}
+
+.item:nth-child(even) {
     background-color: var(--gray-1);
 }
 
+.item:hover {
+    background: #f5f5f5;
+}
+
+.item.clickable {
+    cursor: pointer;
+}
+
+.item.clickable:hover {
+    background: var(--blue-7);
+}
+
+.item.selected {
+    background: var(--blue-7) !important;
+}
+
 .grouped .header {
-    padding-left: var(--size-4);
+    padding-left: var(--group-left-padding);
 }
 
 .grouped .item {
-    border-left: 1px solid #aaa;
+    border-left: 1px solid var(--grid-border-color);
+}
+
+.grouped ::deep .expandable-header {
+    margin-left: calc(var(--group-left-padding) * -1);
+}
+
+.grouped ::deep .expandable-header i {
+    margin: 0 var(--size-1);
 }
 
 .group {
-    border-top: 1px solid #aaa;
+    border-top: 1px solid var(--grid-border-color);
 }
 
 .group-header {
@@ -49,5 +112,5 @@
 
 .group {
     background: var(--gray-1);
-    padding-left: var(--size-4);
+    padding-left: var(--group-left-padding);
 }

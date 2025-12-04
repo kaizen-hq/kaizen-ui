@@ -1,0 +1,10 @@
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    background: #f5f5f5;
+    border-radius: 4px;
+    color: #000;
+}

@@ -1,0 +1,128 @@
+<div class="date-range-picker">
+    <div class="date-range-input-container">
+        <input type="text"
+               class="date-range-input"
+               readonly
+               value="@GetDisplayValue()"
+               placeholder="@Placeholder"
+               @onclick="ToggleCalendar" />
+        <span class="calendar-icon" @onclick="ToggleCalendar">
+            <Blazicon Svg="Lucide.Calendar" />
+        </span>
+    </div>
+
+    @if (isOpen)
+    {
+        <div @ref="popup" class="date-range-calendars" @onblur="ClosePopup" tabindex="-1" @onmousedown="PreventBlur">
+            <DatePicker Value="@(StartDate ?? DateTime.Today)"
+                       ValueChanged="@OnDateSelected"
+                       ShowActionButtons="false"
+                       RangeStart="@StartDate"
+                       RangeEnd="@EndDate"
+                       Min="@Min"
+                       Max="@Max" />
+
+            <DatePicker Value="@(StartDate?.AddMonths(1) ?? DateTime.Today.AddMonths(1))"
+                       ValueChanged="@OnDateSelected"
+                       ShowActionButtons="false"
+                       RangeStart="@StartDate"
+                       RangeEnd="@EndDate"
+                       Min="@Min"
+                       Max="@Max" />
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public DateTime? StartDate { get; set; }
+
+    [Parameter]
+    public EventCallback<DateTime?> StartDateChanged { get; set; }
+
+    [Parameter]
+    public DateTime? EndDate { get; set; }
+
+    [Parameter]
+    public EventCallback<DateTime?> EndDateChanged { get; set; }
+
+    [Parameter]
+    public DateTime? Min { get; set; }
+
+    [Parameter]
+    public DateTime? Max { get; set; }
+
+    [Parameter]
+    public string Placeholder { get; set; } = "Choose a Range";
+
+    private bool isOpen { get; set; } = false;
+    private ElementReference? popup;
+
+    // Hack: to avoid hiding the popup when items on the inside are clicked
+    private bool itemClicked = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender) 
+    {
+        if (popup.HasValue && isOpen)
+            await popup.Value.FocusAsync();
+    }
+
+    private void PreventBlur() 
+    {
+        itemClicked = true; 
+    }
+
+    private async Task ClosePopup() 
+    {
+        await Task.Delay(100);
+        if (!itemClicked) isOpen = false;
+        itemClicked = false;
+    }
+
+    private void ToggleCalendar()
+    {
+        isOpen = !isOpen;
+    }
+
+    private string GetDisplayValue()
+    {
+        if (StartDate.HasValue && EndDate.HasValue)
+        {
+            return $"{StartDate.Value:MM/dd/yyyy} - {EndDate.Value:MM/dd/yyyy}";
+        }
+        else if (StartDate.HasValue)
+        {
+            return StartDate.Value.ToString("MM/dd/yyyy");
+        }
+        return string.Empty;
+    }
+
+    private async Task OnDateSelected(DateTime selectedDate)
+    {
+        // If no start date is set, or if both dates are set (starting a new range), set as start date
+        if (!StartDate.HasValue || (StartDate.HasValue && EndDate.HasValue))
+        {
+            StartDate = selectedDate;
+            EndDate = null;
+            await StartDateChanged.InvokeAsync(StartDate);
+            await EndDateChanged.InvokeAsync(null);
+        }
+        // If start date is set but no end date, set as end date
+        else if (StartDate.HasValue && !EndDate.HasValue)
+        {
+            // If selected date is before start date, swap them
+            if (selectedDate < StartDate.Value)
+            {
+                EndDate = StartDate;
+                StartDate = selectedDate;
+                await StartDateChanged.InvokeAsync(StartDate);
+                await EndDateChanged.InvokeAsync(EndDate);
+            }
+            else
+            {
+                EndDate = selectedDate;
+                await EndDateChanged.InvokeAsync(EndDate);
+            }
+        }
+    }
+}

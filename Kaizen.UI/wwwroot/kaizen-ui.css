@@ -1,7 +1,9 @@
 :root {
     --gray-1: hsl(210, 17%, 98%);
+    --gray-2: hsl(210, 17%, 87%);
     --blue-1: hsl(209, 100%, 38%);
     --blue-3: hsl(209, 100%, 50%);
+    --blue-7: hsl(209, 100%, 90%);
     --red-1: hsl(358, 75%, 59%);
     --red-9: hsl(358, 75%, 97%);
     --green-9: #2b8a3e;
@@ -10,6 +12,8 @@
     --size-2: 0.5rem;
     --size-3: 0.75rem;
     --size-4: 1rem;
+    --size-6: 1.5rem;
+    --size-8: 2rem;
     --font-size-01: 0.6875rem;
     --font-size-1: 1rem;
     --font-size-2: 1.25rem;
@@ -25,7 +29,6 @@
 html, body {
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
 }
 
 .layout {
@@ -49,7 +52,6 @@ main {
     grid-area: main;
     overflow: auto;
     max-height: calc(100vh - var(--header-height));
-    padding: 0 var(--size-4);
 }
 
 header {

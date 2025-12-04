@@ -67,16 +67,24 @@ nav {
     color: white;
 }
 
-.icon {
-    width: 24px;
+::deep .icon {
+    width: 32px;
+    min-width: 32px;
     height: 24px;
-    font-size: 24px;
+    font-size: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
-.collapsed .text {
+::deep .nav-separator {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.2);
+    margin: var(--size-2) 0;
+}
+
+.collapsed ::deep .text {
     display: none;
 }
 
@@ -85,7 +93,7 @@ nav {
     padding: 0;
 }
 
-.collapsed .icon {
+.collapsed ::deep .icon {
     margin: 0;
 }
 
@@ -106,5 +114,10 @@ nav {
 
     .nav-toggle.mobile {
         display: block;
+    }
+
+    .collapsed ::deep .icon {
+        margin: 0;
+        display: none;
     }
 }

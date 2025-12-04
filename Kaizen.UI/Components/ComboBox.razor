@@ -1,0 +1,332 @@
+@typeparam TItem
+@typeparam TValue
+
+<div class="combobox-container">
+    <div class="combobox-input-container">
+
+        <input type="text"
+               class="combobox-input"
+               value="@_searchText"
+               @oninput="OnInput"
+               @onfocus="OnFocus"
+               @onblur="OnBlur"
+               @onkeydown="OnKeyDown"
+               placeholder="@Placeholder"
+               readonly="@(!AllowFiltering)" />
+
+        <button type="button"
+                class="combobox-dropdown-button"
+                @onclick="ToggleDropdown"
+                @onclick:stopPropagation="true">
+            <Blazicon Svg="@(showDropdown ? Lucide.ChevronUp : Lucide.ChevronDown)" />
+        </button>
+
+        @if (!string.IsNullOrEmpty(_searchText) && AllowFiltering)
+        {
+            <button type="button"
+                    class="combobox-clear-button"
+                    @onclick="ClearSelection"
+                    @onclick:stopPropagation="true">
+                <Blazicon Svg="Lucide.X" />
+            </button>
+        }
+    </div>
+
+    @if (showDropdown && filteredItems.Any())
+    {
+        <div class="combobox-dropdown">
+            @if (GroupByField != null)
+            {
+                var groups = filteredItems
+                    .GroupBy(item => GroupByField(item) ?? "")
+                    .OrderBy(g => g.Key);
+
+                var itemIndex = 0;
+                foreach (var group in groups)
+                {
+                    <div class="combobox-group-header">@group.Key</div>
+
+                    foreach (var item in group)
+                    {
+                        var itemValue = GetItemValue(item);
+                        var itemText = GetItemText(item);
+                        var isSelected = EqualityComparer<TValue>.Default.Equals(itemValue, Value);
+                        var isHighlighted = itemIndex == highlightedIndex;
+
+                        <div class="combobox-item @(isSelected ? "selected" : "") @(isHighlighted ? "highlighted" : "")"
+                             @onclick="() => SelectItem(item)"
+                             @onmousedown:preventDefault="true"
+                             @onmouseenter="() => highlightedIndex = itemIndex">
+                            @if (AllowFiltering && !string.IsNullOrEmpty(_searchText))
+                            {
+                                @((MarkupString)HighlightMatch(itemText))
+                            }
+                            else
+                            {
+                                @itemText
+                            }
+                        </div>
+
+                        itemIndex++;
+                    }
+                }
+            }
+            else
+            {
+                var itemsList = filteredItems.ToList();
+                for (int i = 0; i < itemsList.Count; i++)
+                {
+                    var item = itemsList[i];
+                    var itemValue = GetItemValue(item);
+                    var itemText = GetItemText(item);
+                    var isSelected = EqualityComparer<TValue>.Default.Equals(itemValue, Value);
+                    var isHighlighted = i == highlightedIndex;
+
+                    <div class="combobox-item @(isSelected ? "selected" : "") @(isHighlighted ? "highlighted" : "")"
+                         @onclick="() => SelectItem(item)"
+                         @onmousedown:preventDefault="true"
+                         @onmouseenter="() => highlightedIndex = i">
+                        @if (AllowFiltering && !string.IsNullOrEmpty(_searchText))
+                        {
+                            @((MarkupString)HighlightMatch(itemText))
+                        }
+                        else
+                        {
+                            @itemText
+                        }
+                    </div>
+                }
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public TValue? Value { get; set; }
+
+    [Parameter]
+    public EventCallback<TValue> ValueChanged { get; set; }
+
+    [Parameter]
+    public IEnumerable<TItem> DataSource { get; set; } = Enumerable.Empty<TItem>();
+
+    [Parameter]
+    public Func<TItem, string>? TextField { get; set; }
+
+    [Parameter]
+    public Func<TItem, TValue>? ValueField { get; set; }
+
+    [Parameter]
+    public Func<TItem, string>? GroupByField { get; set; }
+
+    [Parameter]
+    public string Placeholder { get; set; } = "Select an item...";
+
+    [Parameter]
+    public bool AllowFiltering { get; set; } = true;
+
+    [Parameter]
+    public int MaxResults { get; set; } = 10;
+
+    private string _searchText = "";
+    private bool showDropdown = false;
+    private IEnumerable<TItem> filteredItems = Enumerable.Empty<TItem>();
+    private bool isBlurring = false;
+    private int highlightedIndex = -1;
+
+    protected override void OnParametersSet()
+    {
+        UpdateSearchText();
+        FilterItems();
+    }
+
+    private void UpdateSearchText()
+    {
+        if (Value != null && !EqualityComparer<TValue>.Default.Equals(Value, default(TValue)))
+        {
+            var selectedItem = DataSource.FirstOrDefault(item =>
+                EqualityComparer<TValue>.Default.Equals(GetItemValue(item), Value));
+
+            if (selectedItem != null)
+            {
+                _searchText = GetItemText(selectedItem);
+            }
+        }
+        else
+        {
+            _searchText = "";
+        }
+    }
+
+    private void OnInput(ChangeEventArgs e)
+    {
+        _searchText = e.Value?.ToString() ?? "";
+        FilterItems();
+
+        if (!showDropdown && AllowFiltering)
+        {
+            showDropdown = true;
+        }
+    }
+
+    private void OnFocus()
+    {
+        if (!showDropdown)
+        {
+            FilterItems();
+            showDropdown = true;
+            highlightedIndex = -1;
+        }
+    }
+
+    private async Task OnKeyDown(KeyboardEventArgs e)
+    {
+        if (!showDropdown && (e.Key == "ArrowDown" || e.Key == "ArrowUp"))
+        {
+            showDropdown = true;
+            FilterItems();
+            highlightedIndex = 0;
+            return;
+        }
+
+        if (!showDropdown) return;
+
+        // Flatten items list (handles both grouped and non-grouped)
+        var itemsList = GetFlattenedItems();
+        if (!itemsList.Any()) return;
+
+        switch (e.Key)
+        {
+            case "ArrowDown":
+                highlightedIndex = Math.Min(highlightedIndex + 1, itemsList.Count - 1);
+                break;
+
+            case "ArrowUp":
+                highlightedIndex = Math.Max(highlightedIndex - 1, 0);
+                break;
+
+            case "Enter":
+                if (highlightedIndex >= 0 && highlightedIndex < itemsList.Count)
+                {
+                    await SelectItem(itemsList[highlightedIndex]);
+                }
+                break;
+
+            case "Escape":
+                showDropdown = false;
+                UpdateSearchText();
+                break;
+        }
+    }
+
+    private List<TItem> GetFlattenedItems()
+    {
+        if (GroupByField != null)
+        {
+            return filteredItems
+                .GroupBy(item => GroupByField(item) ?? "")
+                .OrderBy(g => g.Key)
+                .SelectMany(g => g)
+                .ToList();
+        }
+
+        return filteredItems.ToList();
+    }
+
+    private async Task OnBlur()
+    {
+        isBlurring = true;
+        await Task.Delay(200); // Allow time for click events to fire
+
+        if (isBlurring)
+        {
+            showDropdown = false;
+            UpdateSearchText(); // Reset to selected value if not valid
+            StateHasChanged();
+        }
+    }
+
+    private void ToggleDropdown()
+    {
+        isBlurring = false;
+        showDropdown = !showDropdown;
+
+        if (showDropdown)
+        {
+            // Show all items when opening via dropdown button
+            filteredItems = DataSource.Take(MaxResults).ToList();
+            highlightedIndex = -1;
+        }
+    }
+
+    private void FilterItems()
+    {
+        if (AllowFiltering && !string.IsNullOrWhiteSpace(_searchText))
+        {
+            filteredItems = DataSource
+                .Where(item => GetItemText(item).Contains(_searchText, StringComparison.OrdinalIgnoreCase))
+                .Take(MaxResults)
+                .ToList();
+        }
+        else
+        {
+            filteredItems = DataSource.Take(MaxResults).ToList();
+        }
+
+        // Reset highlighted index when items change
+        highlightedIndex = -1;
+    }
+
+    private async Task SelectItem(TItem item)
+    {
+        isBlurring = false;
+        var value = GetItemValue(item);
+        _searchText = GetItemText(item);
+        showDropdown = false;
+
+        await ValueChanged.InvokeAsync(value);
+    }
+
+    private async Task ClearSelection()
+    {
+        _searchText = "";
+        showDropdown = false;
+        await ValueChanged.InvokeAsync(default(TValue));
+    }
+
+    private string GetItemText(TItem item)
+    {
+        if (TextField != null)
+            return TextField(item);
+
+        return item?.ToString() ?? "";
+    }
+
+    private TValue GetItemValue(TItem item)
+    {
+        if (ValueField != null)
+            return ValueField(item);
+
+        if (item is TValue value)
+            return value;
+
+        return default(TValue)!;
+    }
+
+    private string HighlightMatch(string text)
+    {
+        if (string.IsNullOrEmpty(_searchText)) return text;
+
+        var searchLower = _searchText.ToLower();
+        var index = text.ToLower().IndexOf(searchLower, StringComparison.Ordinal);
+
+        if (index == -1) return text;
+
+        return text[..index] +
+            "<span class=\"highlight\">" +
+            text[index..(index + _searchText.Length)] +
+            "</span>" +
+            text[(index + _searchText.Length)..];
+    }
+}

@@ -1,0 +1,124 @@
+@typeparam TItem
+
+<div class="kaizen-calendar">
+    <div class="calendar-header">
+        <button class="nav-button" @onclick="PreviousMonth">
+            <Blazicon Svg="Lucide.ChevronLeft" />
+        </button>
+        <button class="nav-button" @onclick="NextMonth">
+            <Blazicon Svg="Lucide.ChevronRight" />
+        </button>
+        <input type="month"
+               class="month-picker"
+               value="@CurrentDate.ToString("yyyy-MM")"
+               @onchange="OnMonthChanged" />
+    </div>
+
+    <table class="calendar-grid">
+        <thead>
+            <tr>
+                <th>Sun</th>
+                <th>Mon</th>
+                <th>Tue</th>
+                <th>Wed</th>
+                <th>Thu</th>
+                <th>Fri</th>
+                <th>Sat</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int week = 0; week < WeeksInMonth; week++)
+            {
+                <tr>
+                    @for (int dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++)
+                    {
+                        int dayNumber = (week * 7 + dayOfWeek) - FirstDayOfWeek + 1;
+                        bool isValidDay = dayNumber > 0 && dayNumber <= DaysInMonth;
+                        var dayItems = isValidDay ? GetItemsForDay(dayNumber) : new List<TItem>();
+                        var cellDate = isValidDay ? new DateTime(CurrentDate.Year, CurrentDate.Month, dayNumber) : (DateTime?)null;
+                        bool isToday = cellDate?.Date == DateTime.Today;
+
+                        <td class="calendar-day @(isValidDay ? "valid-day" : "empty-day") @(isToday ? "today" : "")"
+                            @onclick="() => OnDayClick(cellDate)">
+                            @if (isValidDay)
+                            {
+                                <div class="day-number">@dayNumber</div>
+                                <div class="day-content">
+                                    @foreach (var item in dayItems)
+                                    {
+                                        <div class="calendar-item">
+                                            @if (ItemTemplate != null)
+                                            {
+                                                @ItemTemplate(item)
+                                            }
+                                            else
+                                            {
+                                                @item?.ToString()
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@code {
+    [Parameter] public DateTime CurrentDate { get; set; } = DateTime.Today;
+    [Parameter] public EventCallback<DateTime> CurrentDateChanged { get; set; }
+
+    [Parameter] public IEnumerable<TItem> Items { get; set; } = new List<TItem>();
+    [Parameter] public Func<TItem, DateTime> DateSelector { get; set; } = item => DateTime.Today;
+
+    [Parameter] public RenderFragment<TItem>? ItemTemplate { get; set; }
+    
+    [Parameter] public EventCallback<DateTime?> OnDayClicked { get; set; }
+
+    private int DaysInMonth => DateTime.DaysInMonth(CurrentDate.Year, CurrentDate.Month);
+    private int FirstDayOfWeek => (int)new DateTime(CurrentDate.Year, CurrentDate.Month, 1).DayOfWeek;
+    private int WeeksInMonth => (int)Math.Ceiling((FirstDayOfWeek + DaysInMonth) / 7.0);
+
+    private List<TItem> GetItemsForDay(int dayNumber)
+    {
+        var targetDate = new DateTime(CurrentDate.Year, CurrentDate.Month, dayNumber);
+        return Items.Where(item => DateSelector(item).Date == targetDate.Date).ToList();
+    }
+
+    private async Task PreviousMonth()
+    {
+        CurrentDate = CurrentDate.AddMonths(-1);
+        await CurrentDateChanged.InvokeAsync(CurrentDate);
+    }
+
+    private async Task NextMonth()
+    {
+        CurrentDate = CurrentDate.AddMonths(1);
+        await CurrentDateChanged.InvokeAsync(CurrentDate);
+    }
+
+    private async Task OnDayClick(DateTime? date)
+    {
+        if (OnDayClicked.HasDelegate)
+        {
+            await OnDayClicked.InvokeAsync(date);
+        }
+    }
+
+    private async Task OnMonthChanged(ChangeEventArgs e)
+    {
+        if (DateTime.TryParse(e.Value?.ToString() + "-01", out var newDate))
+        {
+            CurrentDate = newDate;
+            await CurrentDateChanged.InvokeAsync(CurrentDate);
+        }
+    }
+
+    public class DayTemplateContext<T>
+    {
+        public DateTime Date { get; set; }
+        public List<T> Items { get; set; } = new();
+    }
+}

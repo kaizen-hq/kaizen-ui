@@ -1,0 +1,68 @@
+ul {
+    padding: 0;
+    margin: 0;
+}
+
+.draggable:first-child {
+    padding-top: 2px;
+}
+
+.draggable {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding-bottom: 2px;
+}
+
+.draggable--anchor {
+    padding: 4px 4px;
+    font-size: 1.55rem;
+    display: flex;
+    align-items: center;
+    background-color: var(--gray-1);
+    color: var(--blue-3);
+    border: 1px solid var(--gray-2);
+    border-radius: 4px;
+}
+
+.draggable--content {
+    flex: 1;
+}
+
+.dragging {
+    opacity: 0.7;
+}
+
+.move-up {
+    position: relative;
+    animation-name: moveUp;
+    animation-iteration-count: 1;
+    animation-duration: .25s;
+    transition-timing-function: cubic-bezier(0,1.5,0.5,1);
+}
+
+.move-down {
+    position: relative;
+    animation-name: moveDown;
+    animation-iteration-count: 1;
+    animation-duration: .25s;
+    transition-timing-function: cubic-bezier(0,1.5,0.5,1);
+}
+
+@keyframes moveUp {
+     0% {
+         transform: translateY(100%);
+     }
+     100% {
+         transform: translateY(0);
+     }
+ }
+
+@keyframes moveDown {
+     0% {
+         transform: translateY(-100%);
+     }
+     100% {
+         transform: translateY(0);
+     }
+ }

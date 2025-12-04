@@ -1,0 +1,186 @@
+<div class="date-picker">
+    <div class="date-picker-header">
+        <button class="nav-button" @onclick="PreviousMonth" type="button">
+            <Blazicon Svg="@Lucide.ChevronUp" />
+        </button>
+        <div class="month-year">@CurrentMonth.ToString("MMMM yyyy")</div>
+        <button class="nav-button" @onclick="NextMonth" type="button">
+            <Blazicon Svg="@Lucide.ChevronDown" />
+        </button>
+    </div>
+
+    <div class="date-picker-grid">
+        <div class="day-header">Su</div>
+        <div class="day-header">Mo</div>
+        <div class="day-header">Tu</div>
+        <div class="day-header">We</div>
+        <div class="day-header">Th</div>
+        <div class="day-header">Fr</div>
+        <div class="day-header">Sa</div>
+
+        @foreach (var day in GetCalendarDays())
+        {
+            <button type="button"
+                    class="day-cell @GetDayClass(day)"
+                    @onclick="() => SelectDate(day)"
+                    disabled="@IsDateDisabled(day.Date)">
+                @day.Day
+            </button>
+        }
+    </div>
+
+    @if (ShowActionButtons)
+    {
+        <div class="date-picker-actions">
+            <button class="action-button" @onclick="SelectToday" type="button">Today</button>
+            <button class="action-button" @onclick="SelectTomorrow" type="button">Tomorrow</button>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public DateTime Value { get; set; } = DateTime.Today;
+
+    [Parameter]
+    public EventCallback<DateTime> ValueChanged { get; set; }
+
+    [Parameter]
+    public bool ShowActionButtons { get; set; } = true;
+
+    [Parameter]
+    public DateTime? RangeStart { get; set; }
+
+    [Parameter]
+    public DateTime? RangeEnd { get; set; }
+
+    [Parameter]
+    public DateTime? Min { get; set; }
+
+    [Parameter]
+    public DateTime? Max { get; set; }
+
+    private DateTime CurrentMonth { get; set; }
+
+    protected override void OnInitialized()
+    {
+        CurrentMonth = new DateTime(Value.Year, Value.Month, 1);
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (Value != default)
+        {
+            CurrentMonth = new DateTime(Value.Year, Value.Month, 1);
+        }
+    }
+
+    private void PreviousMonth()
+    {
+        CurrentMonth = CurrentMonth.AddMonths(-1);
+    }
+
+    private void NextMonth()
+    {
+        CurrentMonth = CurrentMonth.AddMonths(1);
+    }
+
+    private async Task SelectDate(CalendarDay day)
+    {
+        Value = day.Date;
+
+        // Navigate to the month of the selected date if it's from a different month
+        if (!day.IsCurrentMonth)
+        {
+            CurrentMonth = new DateTime(day.Date.Year, day.Date.Month, 1);
+        }
+
+        await ValueChanged.InvokeAsync(Value);
+    }
+
+    private async Task SelectToday()
+    {
+        Value = DateTime.Today;
+        CurrentMonth = new DateTime(Value.Year, Value.Month, 1);
+        await ValueChanged.InvokeAsync(Value);
+    }
+
+    private async Task SelectTomorrow()
+    {
+        Value = DateTime.Today.AddDays(1);
+        CurrentMonth = new DateTime(Value.Year, Value.Month, 1);
+        await ValueChanged.InvokeAsync(Value);
+    }
+
+    private bool IsDateDisabled(DateTime date)
+    {
+        if (Min.HasValue && date < Min.Value)
+            return true;
+
+        if (Max.HasValue && date > Max.Value)
+            return true;
+
+        return false;
+    }
+
+    private string GetDayClass(CalendarDay day)
+    {
+        var classes = new List<string>();
+
+        if (!day.IsCurrentMonth)
+            classes.Add("other-month");
+
+        if (day.Date.Date == DateTime.Today)
+            classes.Add("today");
+
+        // Only show "selected" class if we're not in range mode
+        if (!RangeStart.HasValue && !RangeEnd.HasValue && day.Date.Date == Value.Date)
+            classes.Add("selected");
+
+        // Range styling
+        if (RangeStart.HasValue && day.Date.Date == RangeStart.Value.Date)
+            classes.Add("selected-start");
+
+        if (RangeEnd.HasValue && day.Date.Date == RangeEnd.Value.Date)
+            classes.Add("selected-end");
+
+        // Highlight dates in between start and end
+        if (RangeStart.HasValue && RangeEnd.HasValue &&
+            day.Date.Date > RangeStart.Value.Date &&
+            day.Date.Date < RangeEnd.Value.Date)
+            classes.Add("in-range");
+
+        return string.Join(" ", classes);
+    }
+
+    private List<CalendarDay> GetCalendarDays()
+    {
+        var days = new List<CalendarDay>();
+        var firstDayOfMonth = CurrentMonth;
+        var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+        // Get the first day to display (previous month days)
+        var startDate = firstDayOfMonth.AddDays(-(int)firstDayOfMonth.DayOfWeek);
+
+        // Get 6 weeks (42 days) to cover all possible month layouts
+        for (int i = 0; i < 42; i++)
+        {
+            var date = startDate.AddDays(i);
+            days.Add(new CalendarDay
+            {
+                Date = date,
+                Day = date.Day,
+                IsCurrentMonth = date.Month == CurrentMonth.Month
+            });
+        }
+
+        return days;
+    }
+
+    private class CalendarDay
+    {
+        public DateTime Date { get; set; }
+        public int Day { get; set; }
+        public bool IsCurrentMonth { get; set; }
+    }
+}

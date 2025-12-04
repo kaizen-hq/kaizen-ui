@@ -1,17 +1,10 @@
-@* 
+@*
     This exists to get around .NET 8 render modes always rendering layout items as static
-    https://github.com/MudBlazor/MudBlazor/issues/7763 
+    https://github.com/MudBlazor/MudBlazor/issues/7763
 *@
-<LeftNavigationBar NavigationItems="_navItems" />
-
-@code {
-    readonly List<LeftNavigationBar.NavItem> _navItems =
-    [
-        new LeftNavigationBar.NavItem()
-        {
-            Href = "/",
-            Icon = @<Blazicon Svg="Lucide.House" />,
-            Text = "Home"
-        }
-    ];
-}
+<LeftNavigationBar>
+    <NavLink href="/">
+        <Blazicon Svg="Lucide.House" />
+        Home
+    </NavLink>
+</LeftNavigationBar>

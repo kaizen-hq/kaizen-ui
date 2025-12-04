@@ -72,7 +72,7 @@
         new("K", "Item K", 11, 110, "Group 6"),
     };
 
-    readonly Func<WorkItem, string> _groupBy = x => x.GroupName;
+    readonly System.Linq.Expressions.Expression<Func<WorkItem, string>> _groupBy = x => x.GroupName;
 
     private void OnActionCompleted(OnActionCompletedArgs<WorkItem> args)
     {

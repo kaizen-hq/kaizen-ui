@@ -1,0 +1,99 @@
+@using System.Diagnostics.CodeAnalysis
+@typeparam T
+
+<ul>
+    @foreach(var (value, index) in OrderedList().Select((x, i) => (x, i)))
+    {
+        <li class="draggable @(DragoverIndex == index ? GetDragClassName : "") @(DraggingIndex == index ? "dragging" : "")"
+            ondragover="event.preventDefault()"
+            @ondragenter="() => OnDragEnter(index)"
+            @ondrop="OnDrop"
+        >
+            <div class="draggable--anchor"
+                 draggable="true" 
+                 @ondragstart="(obj) => OnDragStart(obj, index)" 
+                 @ondragend="OnDragEnd" 
+            >
+                <Blazicon Svg="Lucide.GripVertical" />
+                <div class="draggable--content">
+                    @ItemTemplate(value)
+                </div>
+            </div>
+            
+        </li>
+    }
+</ul>
+
+@code {
+    
+    [Parameter]
+    [NotNull]
+    public List<T>? Items { get; set; }
+    
+    [Parameter]
+    [NotNull]
+    public RenderFragment<T>? ItemTemplate { get; set; }
+    
+    [Parameter]
+    public EventCallback<List<T>> OnReorder { get; set; }
+    
+    int DragoverIndex { get; set; } = -1;
+    int DraggingIndex { get; set; } = -1;
+    bool IsActive { get; set; }
+
+    bool IsActiveAndDragging => DragoverIndex != -1 && IsActive && DraggingIndex != DragoverIndex;
+
+    List<T> OrderedList()
+    {
+        if (!IsActiveAndDragging) return Items;
+        var listCopy = new List<T>(Items);
+        var element = listCopy[DraggingIndex];
+        listCopy.RemoveAt(DraggingIndex);
+        listCopy.Insert(DragoverIndex, element);
+        return listCopy;
+    }
+
+    private async Task OnDrop(DragEventArgs args)
+    {
+        if (ReorderList()) 
+            await OnReorder.InvokeAsync(Items);
+    }
+
+    private bool ReorderList()
+    {
+        if (!IsActiveAndDragging) return false;
+        Items = OrderedList();
+        return true;
+    }
+
+    private void OnDragEnter(int index)
+    {
+        DragoverIndex = IsActive ? index : DragoverIndex;
+    }
+
+    private void OnDragEnd()
+    {
+        DraggingIndex = -1;
+        DragoverIndex = -1;
+        IsActive = false;
+    }
+
+    private string GetDragClassName
+    {
+        get
+        {
+            if (DraggingIndex > DragoverIndex)
+                return "over move-up";
+            else if (DraggingIndex < DragoverIndex)
+                return "over move-down";
+            return "";
+        }
+    }
+
+    private void OnDragStart(DragEventArgs dragEventArgs, int index)
+    {
+        DraggingIndex = index;
+        IsActive = true;
+    }
+
+}

@@ -40,9 +40,14 @@
     [Parameter]
     public Expression<Func<TItem, dynamic>>? Sort { get; set; }
 
+    [Parameter]
+    public string? Align { get; set; }
+
+    private int _columnIndex;
+
     private bool IsCurrentlyDescending => OrderByState.OrderBy.Any(x => x.Name == Name && x.Descending);
     private bool Active => OrderByState.OrderBy.Any(x => x.Name == Name);
-    
+
     private void UpdateOrderBy()
     {
         if (Sort == null) return; // Shouldn't be possible
@@ -51,6 +56,14 @@
         OrderByState.UpdateOrderBy?.Invoke(new OrderBy<TItem, dynamic>(Name, descending, Sort), shouldRemove);
     }
 
+    protected override void OnInitialized()
+    {
+        _columnIndex = ++OrderByState.ColumnCounter;
 
+        if (!string.IsNullOrEmpty(Align))
+        {
+            OrderByState.RegisterAlignment?.Invoke(_columnIndex, Align);
+        }
+    }
 
 }

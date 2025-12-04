@@ -1,0 +1,11 @@
+@using System.Diagnostics.CodeAnalysis
+
+<div class="accordion">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter]
+    [NotNull]
+    public RenderFragment? ChildContent { get; set; }
+}

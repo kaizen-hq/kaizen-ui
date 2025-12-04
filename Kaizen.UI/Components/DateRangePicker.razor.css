@@ -1,0 +1,155 @@
+.date-range-picker {
+    position: relative;
+    display: inline-block;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.date-range-input-container {
+    position: relative;
+    display: inline-block;
+}
+
+.date-range-input {
+    width: 220px;
+    padding: var(--size-1) var(--size-2); 
+    border: 1px solid #d1d1d1;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    background: white;
+}
+
+.date-range-input:focus {
+    outline: none;
+    border-color: #0078d6;
+}
+
+.calendar-icon {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.date-range-calendars {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 4px;
+    display: flex;
+    gap: 1rem;
+    background: white;
+    border: 1px solid #d1d1d1;
+    border-radius: 4px;
+    padding: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.calendar {
+    flex: 1;
+}
+
+.date-picker-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.month-year {
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    flex: 1;
+}
+
+.nav-button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.nav-button:hover {
+    background: #f0f0f0;
+}
+
+.nav-button :global(svg) {
+    width: 20px;
+    height: 20px;
+}
+
+.date-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.day-header {
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    color: #666;
+    padding: 0.5rem 0;
+}
+
+.day-cell {
+    aspect-ratio: 1;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    outline: none;
+}
+
+.day-cell:not(:disabled):hover {
+    background: #f0f0f0;
+}
+
+.day-cell.other-month {
+    color: #ccc;
+}
+
+.day-cell.today {
+    font-weight: 600;
+    color: #0078d6;
+}
+
+.day-cell.selected-start,
+.day-cell.selected-end {
+    background: #0078d6;
+    color: white;
+}
+
+.day-cell.selected-start:hover,
+.day-cell.selected-end:hover {
+    background: #0066b8;
+}
+
+.day-cell.in-range {
+    background: #e6f2ff;
+    color: #0078d6;
+}
+
+.day-cell.in-range:hover {
+    background: #cce4ff;
+}
+
+.day-cell:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
