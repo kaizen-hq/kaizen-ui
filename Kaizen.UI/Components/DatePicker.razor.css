@@ -60,16 +60,20 @@
 
 .day-cell {
     min-width: auto;
+    aspect-ratio: 1 / 1;
     padding: 1px 6px;
     border: none;
     background: transparent;
     cursor: pointer;
     font-size: 14px;
     border-radius: 4px;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
     outline: none;
     color: #000;
     font-weight: 400;
+    text-align: center;
+    display: block;
+    box-sizing: border-box;
 }
 
 .day-cell:not(:disabled):hover {
