@@ -3,8 +3,52 @@
     https://github.com/MudBlazor/MudBlazor/issues/7763
 *@
 <LeftNavigationBar>
-    <NavLink href="/">
-        <Blazicon Svg="Lucide.House" />
-        Home
+    <NavLink Match="NavLinkMatch.All" class="nav-item" href="/">
+        <div class="icon">
+            <Blazicon Svg="Lucide.House" />
+        </div>
+        <span class="text">Home</span>
+    </NavLink>
+    <NavLink class="nav-item" href="/FlatGrid">
+        <div class="icon">
+            <Blazicon Svg="Lucide.Table" />
+        </div>
+        <span class="text">Basic Grid</span>
+    </NavLink>
+    <NavLink class="nav-item" href="/EditableGrid">
+        <div class="icon">
+            <Blazicon Svg="Lucide.Pencil" />
+        </div>
+        <span class="text">Editable Grid</span>
+    </NavLink>
+    <NavLink class="nav-item" href="/GroupedGrid">
+        <div class="icon">
+            <Blazicon Svg="Lucide.Group" />
+        </div>
+        <span class="text">Grouped Grid</span>
+    </NavLink>
+    <NavLink class="nav-item" href="/EditablePanel">
+        <div class="icon">
+            <Blazicon Svg="Lucide.PanelTop" />
+        </div>
+        <span class="text">Editable Panel</span>
+    </NavLink>
+    <NavLink class="nav-item" href="/SearchableGrid">
+        <div class="icon">
+            <Blazicon Svg="Lucide.Search" />
+        </div>
+        <span class="text">Searchable Grid</span>
+    </NavLink>
+    <NavLink class="nav-item" href="/CalendarGrid">
+        <div class="icon">
+            <Blazicon Svg="Lucide.Calendar" />
+        </div>
+        <span class="text">Calendar Grid</span>
+    </NavLink>
+    <NavLink class="nav-item" href="/DateRangeGrid">
+        <div class="icon">
+            <Blazicon Svg="Lucide.CalendarRange" />
+        </div>
+        <span class="text">Date Range Grid</span>
     </NavLink>
 </LeftNavigationBar>

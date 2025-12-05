@@ -3,14 +3,24 @@
 @using System.ComponentModel.DataAnnotations
 @inject ToastService Toast
 
-<DataGrid Items="_data" Pagination="_pagination" GroupBy="_groupBy">
+<div class="page">
+    <h2>Grouped Grid</h2>
+
+    <DataGrid Items="_data" Pagination="_pagination" GroupBy="_groupBy">
     <Header>
         <GridColumnHeader Name="Code"/>
         <GridColumnHeader Name="Description"/>
         <GridColumnHeader Name="Quantity" Sort="x => x.Price"/>
         <GridColumnHeader Name="Price"/>
-        <GridColumnHeader />
+        <GridColumnHeader Name="Actions" Align="right" />
     </Header>
+    <Grouping Context="groupKey">
+        <div class="group-header">
+            <Blazicon Svg="Lucide.FolderOpen" />
+            <span>@groupKey</span>
+            <span class="group-count">(@_data.Count(x => x.Category == groupKey) items)</span>
+        </div>
+    </Grouping>
     <RowTemplate Context="workItem">
         <Editable Item="workItem" OnActionCompleted="OnActionCompleted" TItem="WorkItem">
             <ReadTemplate>
@@ -34,45 +44,46 @@
         </Editable>
     </RowTemplate>
 </DataGrid>
-<Paginator Pagination="_pagination" />
+    <Paginator Pagination="_pagination" />
+</div>
 
 @code {
 
-    record WorkItem(string Code, string Description, int Quantity, decimal Price, string GroupName)
+    record WorkItem(string Code, string Description, int Quantity, decimal Price, string Category)
     {
         [Required(ErrorMessage = "Code is required")]
         public string Code { get; set; } = Code;
         public string Description { get; set; } = Description;
-        
+
         [Range(1, int.MaxValue, ErrorMessage = "Quantity must be greater than 0")]
         public int Quantity { get; set; } = Quantity;
         public decimal Price { get; set; } = Price;
-        public string GroupName { get; set; } = GroupName;
-        
+        public string Category { get; set; } = Category;
+
         public Guid Id { get; } = Guid.NewGuid();
     };
-    
+
     Paginator.PaginationState _pagination = new()
     {
         PageSize = 5
     };
-    
+
     IEnumerable<WorkItem> _data = new List<WorkItem>
     {
-        new("A", "Item A", 1, 10, "Group 1"),
-        new("B", "Item B", 2, 20, "Group 1"),
-        new("C", "Item C", 3, 30, "Group 2"),
-        new("D", "Item D", 4, 40, "Group 2"),
-        new("E", "Item E", 5, 50 , "Group 3"),
-        new("F", "Item F", 6, 60, "Group 3"),
-        new("G", "Item G", 7, 70, "Group 4"),
-        new("H", "Item H", 8, 80, "Group 4"),
-        new("I", "Item I", 9, 90, "Group 5"),
-        new("J", "Item J", 10, 100, "Group 5"),
-        new("K", "Item K", 11, 110, "Group 6"),
+        new("A", "Item A", 1, 10, "Office Supplies"),
+        new("B", "Item B", 2, 20, "Office Supplies"),
+        new("C", "Item C", 3, 30, "Electronics"),
+        new("D", "Item D", 4, 40, "Electronics"),
+        new("E", "Item E", 5, 50, "Furniture"),
+        new("F", "Item F", 6, 60, "Furniture"),
+        new("G", "Item G", 7, 70, "Hardware"),
+        new("H", "Item H", 8, 80, "Hardware"),
+        new("I", "Item I", 9, 90, "Software"),
+        new("J", "Item J", 10, 100, "Software"),
+        new("K", "Item K", 11, 110, "Accessories"),
     };
 
-    readonly System.Linq.Expressions.Expression<Func<WorkItem, string>> _groupBy = x => x.GroupName;
+    readonly System.Linq.Expressions.Expression<Func<WorkItem, string>> _groupBy = x => x.Category;
 
     private void OnActionCompleted(OnActionCompletedArgs<WorkItem> args)
     {

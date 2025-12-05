@@ -1,0 +1,89 @@
+@page "/DateRangeGrid"
+@rendermode InteractiveWebAssembly
+@using Kaizen.UI
+
+<div class="page">
+    <h2>Date Range Filtered Grid</h2>
+
+    <Toolbar>
+        <DateRangePicker @bind-StartDate="@_startDate"
+                        @bind-EndDate="@_endDate"
+                        Placeholder="Select Date Range" />
+        <button class="toolbar-button">Export</button>
+    </Toolbar>
+
+    <DataGrid Items="@FilteredData" Pagination="_pagination">
+        <Header>
+            <GridColumnHeader Name="Order ID"/>
+            <GridColumnHeader Name="Customer"/>
+            <GridColumnHeader Name="Date" Sort="x => x.OrderDate"/>
+            <GridColumnHeader Name="Amount"/>
+            <GridColumnHeader Name="Actions"/>
+        </Header>
+        <RowTemplate Context="order">
+            <span>@order.OrderId</span>
+            <span>@order.CustomerName</span>
+            <span>@order.OrderDate.ToString("MM/dd/yyyy")</span>
+            <span>@order.Amount.ToString("C")</span>
+            <button class="action-button" @onclick="() => HandleAction(order)">View</button>
+        </RowTemplate>
+    </DataGrid>
+    <Paginator Pagination="_pagination" />
+</div>
+
+@code {
+    record Order(string OrderId, string CustomerName, DateTime OrderDate, decimal Amount);
+
+    Paginator.PaginationState _pagination = new()
+    {
+        PageSize = 10
+    };
+
+    private DateTime? _startDate;
+    private DateTime? _endDate;
+
+    private IEnumerable<Order> _allData = new List<Order>
+    {
+        new("ORD-001", "Acme Corporation", new DateTime(2024, 11, 1), 1250.00m),
+        new("ORD-002", "Tech Solutions Inc", new DateTime(2024, 11, 5), 890.50m),
+        new("ORD-003", "Global Industries", new DateTime(2024, 11, 10), 2100.75m),
+        new("ORD-004", "Summit Partners", new DateTime(2024, 11, 15), 675.00m),
+        new("ORD-005", "Innovative Designs", new DateTime(2024, 11, 20), 1450.25m),
+        new("ORD-006", "Metro Systems", new DateTime(2024, 11, 25), 3200.00m),
+        new("ORD-007", "Pacific Trading", new DateTime(2024, 11, 28), 925.50m),
+        new("ORD-008", "Eastern Supplies", new DateTime(2024, 12, 1), 1575.00m),
+        new("ORD-009", "Northern Electronics", new DateTime(2024, 12, 3), 2890.00m),
+        new("ORD-010", "Southern Wholesale", new DateTime(2024, 12, 5), 1125.75m),
+        new("ORD-011", "Central Manufacturing", new DateTime(2024, 12, 8), 4500.00m),
+        new("ORD-012", "Coastal Ventures", new DateTime(2024, 12, 10), 780.25m),
+        new("ORD-013", "Mountain Enterprises", new DateTime(2024, 12, 12), 1950.00m),
+        new("ORD-014", "Valley Distributors", new DateTime(2024, 12, 15), 2340.50m),
+        new("ORD-015", "Riverside Trading", new DateTime(2024, 12, 18), 1675.00m),
+        new("ORD-016", "Harbor Logistics", new DateTime(2024, 12, 20), 3100.25m),
+        new("ORD-017", "Lakeside Commerce", new DateTime(2024, 12, 22), 890.00m),
+        new("ORD-018", "Forest Industries", new DateTime(2024, 12, 25), 2225.75m),
+        new("ORD-019", "Desert Solutions", new DateTime(2024, 12, 28), 1450.00m),
+        new("ORD-020", "Prairie Partners", new DateTime(2024, 12, 30), 3750.50m),
+    };
+
+    private IEnumerable<Order> FilteredData
+    {
+        get
+        {
+            if (_startDate.HasValue && _endDate.HasValue)
+            {
+                return _allData.Where(x => x.OrderDate >= _startDate.Value && x.OrderDate <= _endDate.Value);
+            }
+            else if (_startDate.HasValue)
+            {
+                return _allData.Where(x => x.OrderDate >= _startDate.Value);
+            }
+            return _allData;
+        }
+    }
+
+    private void HandleAction(Order order)
+    {
+        // Button does nothing as requested
+    }
+}

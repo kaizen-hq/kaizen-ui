@@ -1,0 +1,91 @@
+@page "/CalendarGrid"
+@rendermode InteractiveWebAssembly
+@using Kaizen.UI
+
+<div class="page">
+    <h2>Calendar with Grid</h2>
+
+    <div class="panel">
+        <Calendar Items="_appointments"
+                  DateSelector="@(a => a.Date)"
+                  OnDayClicked="OnDaySelected"
+                  @bind-CurrentDate="_currentMonth">
+            <ItemTemplate Context="appointment">
+                <div class="appointment-item">
+                    @appointment.Time - @appointment.Client
+                </div>
+            </ItemTemplate>
+        </Calendar>
+    </div>
+
+    @if (_selectedDate.HasValue)
+    {
+        <div class="panel">
+            <h3>Appointments for @_selectedDate.Value.ToString("MMMM d, yyyy")</h3>
+            <DataGrid Items="_filteredAppointments" Pagination="_pagination">
+                <Header>
+                    <GridColumnHeader Name="Time"/>
+                    <GridColumnHeader Name="Client"/>
+                    <GridColumnHeader Name="Service"/>
+                    <GridColumnHeader Name="Duration"/>
+                </Header>
+                <RowTemplate Context="appointment">
+                    <span>@appointment.Time</span>
+                    <span>@appointment.Client</span>
+                    <span>@appointment.Service</span>
+                    <span>@appointment.Duration</span>
+                </RowTemplate>
+            </DataGrid>
+            <Paginator Pagination="_pagination" />
+        </div>
+    }
+</div>
+
+@code {
+    record Appointment(DateTime Date, string Time, string Client, string Service, string Duration);
+
+    private DateTime _currentMonth = DateTime.Today;
+    private DateTime? _selectedDate;
+    private IEnumerable<Appointment> _filteredAppointments = new List<Appointment>();
+
+    Paginator.PaginationState _pagination = new()
+    {
+        PageSize = 10
+    };
+
+    private List<Appointment> _appointments = new()
+    {
+        // This week
+        new(DateTime.Today, "9:00 AM", "John Smith", "Haircut", "30 min"),
+        new(DateTime.Today, "9:30 AM", "Sarah Johnson", "Color Treatment", "90 min"),
+        new(DateTime.Today, "11:00 AM", "Mike Davis", "Beard Trim", "20 min"),
+        new(DateTime.Today.AddDays(1), "9:00 AM", "William Garcia", "Haircut", "30 min"),
+        new(DateTime.Today.AddDays(1), "9:45 AM", "Mary Rodriguez", "Blowout", "45 min"),
+        new(DateTime.Today.AddDays(1), "10:30 AM", "James Wilson", "Haircut & Beard", "45 min"),
+        new(DateTime.Today.AddDays(2), "11:30 AM", "Patricia Thomas", "Root Touch-Up", "60 min"),
+        new(DateTime.Today.AddDays(2), "1:00 PM", "Christopher Lee", "Haircut", "30 min"),
+
+        // Next week
+        new(DateTime.Today.AddDays(7), "9:00 AM", "Emily Wilson", "Haircut & Style", "45 min"),
+        new(DateTime.Today.AddDays(7), "1:00 PM", "David Brown", "Consultation", "15 min"),
+        new(DateTime.Today.AddDays(7), "1:30 PM", "Lisa Anderson", "Highlights", "120 min"),
+        new(DateTime.Today.AddDays(8), "3:30 PM", "Robert Taylor", "Haircut", "30 min"),
+        new(DateTime.Today.AddDays(8), "4:00 PM", "Jennifer Martinez", "Perm", "150 min"),
+        new(DateTime.Today.AddDays(9), "1:45 PM", "Barbara White", "Keratin Treatment", "180 min"),
+        new(DateTime.Today.AddDays(9), "5:00 PM", "Daniel Harris", "Haircut", "30 min"),
+        new(DateTime.Today.AddDays(9), "5:45 PM", "Susan Clark", "Style", "30 min"),
+    };
+
+    private void OnDaySelected(DateTime? date)
+    {
+        if (!date.HasValue) return;
+
+        _selectedDate = date;
+        _filteredAppointments = _appointments
+            .Where(a => a.Date.Date == date.Value.Date)
+            .OrderBy(a => a.Time)
+            .ToList();
+        _pagination.PageNumber = 0;
+        _pagination.Notify();
+    }
+}

@@ -46,24 +46,10 @@ a, .btn-link {
     justify-self: center;
 }
 
-th, .santa-grid .header {
-    background-color: var(--gray-1);
-    padding: var(--size-2);
-    text-align: left;
+.page {
+    max-width: 1200px;
 }
 
-td, .santa-grid .item {
-    padding: var(--size-2);
-}
-
-
-
-td:has(input) {
-    padding: 0;
-}
-
-input {
-    padding: var(--size-1);
-    box-sizing: border-box;
-    max-width: 100%;
+.page-narrow {
+    max-width: 800px;
 }

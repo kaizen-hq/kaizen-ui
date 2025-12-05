@@ -24,6 +24,7 @@
     --left-nav-collapsed-width: 64px;
     --left-nav-background: linear-gradient(180deg, rgb(0, 0, 0, .85) 60%, #3B7238 100%);
     --header-height: 64px;
+    --nav-link-color: #efefef;
 }
 
 html, body {
@@ -52,6 +53,7 @@ main {
     grid-area: main;
     overflow: auto;
     max-height: calc(100vh - var(--header-height));
+    padding: var(--size-1) var(--size-4);
 }
 
 header {
@@ -120,4 +122,106 @@ a[role="button"] {
     color: var(--blue-1);
     text-decoration: none;
     cursor: pointer;
+}
+
+dialog {
+    --border-color: #ccc;
+    border: 1px solid var(--border-color); 
+    border-radius: 4px;
+    padding: 18px;
+    box-shadow: 2px 2px 2px var(--border-color);
+}
+
+dialog header {
+    border-bottom: 1px solid var(--border-color);
+    margin: 0 -18px;
+    padding: 0 18px;
+} 
+
+dialog .dialog-content {
+    margin: 12px 0;
+}
+
+dialog .actions {
+    border-top: 1px solid var(--border-color);
+    margin: 0 -18px;
+    padding: 0 18px;
+    padding-top: 18px;
+    display: flex;
+    justify-content: end;
+    gap: 12px;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+button {
+    display: inline-block;
+    color: #fff;
+    font-size: 14px;
+    font-weight: normal;
+    border-radius: 4px;
+    border: 1px solid #aaa;
+    box-shadow: none;
+    padding: 4px 8px;
+    min-width: 64px;
+}
+
+button:hover {
+    filter: brightness(0.9);
+}
+
+button:focus {
+    outline: 1px solid #009;
+}
+
+button.primary {
+    background: rgb(11.05, 93.5, 215.05);
+    border-color: rgb(10.4, 88, 202.4);
+}
+
+button.secondary {
+    color: black;
+    background: #eee;
+    border-color: #ddd;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+button:disabled:hover {
+    filter: none;
+}
+
+input {
+    width: 100%;
+    padding: 4px 8px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+    background-color: white;
+    height: 32px;
+}
+
+input:focus {
+    outline: none;
+    border-color: #0078d4;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-field label {
+    font-size: 12px;
+    color: #333;
+    font-weight: 500;
+    margin-bottom: 4px;
 }

@@ -57,13 +57,25 @@
                     @foreach (var group in Query.GroupBy(GroupBy!.Compile()))
                     {
                         <div class="group">
-                            <ExpandableRow Title="@group.Key">
-                                @foreach(var item in group)
-                                {
-                                    <div class="@GetRowCssClass(item)" @onclick="() => OnRowClick(item)">
-                                        @RowTemplate(item)
-                                    </div>
-                                }
+                            <ExpandableRow>
+                                <Title>
+                                    @if (Grouping is not null)
+                                    {
+                                        @Grouping(group.Key)
+                                    }
+                                    else
+                                    {
+                                        @group.Key
+                                    }
+                                </Title>
+                                <ChildContent>
+                                    @foreach(var item in group)
+                                    {
+                                        <div class="@GetRowCssClass(item)" @onclick="() => OnRowClick(item)">
+                                            @RowTemplate(item)
+                                        </div>
+                                    }
+                                </ChildContent>
                             </ExpandableRow>
                         </div>
                     }
@@ -112,6 +124,9 @@
 
     [Parameter]
     public RenderFragment? ToolbarContent { get; set; }
+
+    [Parameter]
+    public RenderFragment<string>? Grouping { get; set; }
 
     private OrderByState<TItem, dynamic> OrderByState { get; } = new();
     private EditContext? _editContext;

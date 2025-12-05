@@ -1,0 +1,161 @@
+@page "/EditablePanel"
+@rendermode InteractiveWebAssembly
+@using Kaizen.UI
+@using System.ComponentModel.DataAnnotations
+@inject ToastService Toast
+
+<Toaster />
+
+<div class="page-narrow">
+    <h2>User Profile</h2>
+
+    <EditForm EditContext="_editContext">
+        <DataAnnotationsValidator />
+        <div class="panel">
+            <h3>Personal Information</h3>
+            @if (_profileDeleted)
+            {
+                <div class="deleted-message">
+                    <p>Profile has been deleted.</p>
+                </div>
+            }
+            else
+            {
+                <Editable Item="_userProfile" OnActionCompleted="OnSaveCompleted" TItem="UserProfile">
+                    <ReadTemplate>
+                        <div class="read-panel">
+                            <div class="field-group">
+                                <label>First Name:</label>
+                                <span>@_userProfile.FirstName</span>
+                            </div>
+                            <div class="field-group">
+                                <label>Last Name:</label>
+                                <span>@_userProfile.LastName</span>
+                            </div>
+                            <div class="field-group">
+                                <label>Email:</label>
+                                <span>@_userProfile.Email</span>
+                            </div>
+                            <div class="field-group">
+                                <label>Phone:</label>
+                                <span>@_userProfile.Phone</span>
+                            </div>
+                        </div>
+                    </ReadTemplate>
+                    <EditTemplate Context="profile">
+                        <div class="edit-panel">
+                            <div class="field-group">
+                                <label>First Name:</label>
+                                <div>
+                                    <InputText @bind-Value="profile.FirstName" />
+                                    <ValidationMessage For="() => profile.FirstName" />
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label>Last Name:</label>
+                                <div>
+                                    <InputText @bind-Value="profile.LastName" />
+                                    <ValidationMessage For="() => profile.LastName" />
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label>Email:</label>
+                                <div>
+                                    <InputText type="email" @bind-Value="profile.Email" />
+                                    <ValidationMessage For="() => profile.Email" />
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label>Phone:</label>
+                                <div>
+                                    <InputText @bind-Value="profile.Phone" />
+                                    <ValidationMessage For="() => profile.Phone" />
+                                </div>
+                            </div>
+                        </div>
+                    </EditTemplate>
+                </Editable>
+            }
+        </div>
+
+        <div class="panel">
+            <h3>Readonly Section (View Only)</h3>
+            <Editable Item="_accountInfo" OnActionCompleted="OnSaveCompleted" TItem="AccountInfo" Readonly="true" CanDelete="false">
+                <ReadTemplate>
+                    <div class="read-panel">
+                        <div class="field-group">
+                            <label>Account ID:</label>
+                            <span>@_accountInfo.AccountId</span>
+                        </div>
+                        <div class="field-group">
+                            <label>Created Date:</label>
+                            <span>@_accountInfo.CreatedDate.ToShortDateString()</span>
+                        </div>
+                        <div class="field-group">
+                            <label>Status:</label>
+                            <span class="status-badge @_accountInfo.Status.ToLower()">@_accountInfo.Status</span>
+                        </div>
+                    </div>
+                </ReadTemplate>
+                <EditTemplate Context="account">
+                    <div class="edit-panel">
+                        <p>This section is readonly and should never be editable.</p>
+                    </div>
+                </EditTemplate>
+            </Editable>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    public class UserProfile
+    {
+        [Required(ErrorMessage = "First name is required")]
+        public string FirstName { get; set; } = "John";
+
+        [Required(ErrorMessage = "Last name is required")]
+        public string LastName { get; set; } = "Doe";
+
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email format")]
+        public string Email { get; set; } = "john.doe@example.com";
+
+        public string Phone { get; set; } = "(555) 123-4567";
+    }
+
+    public class AccountInfo
+    {
+        public string AccountId { get; set; } = "ACC-2024-001";
+        public DateTime CreatedDate { get; set; } = new DateTime(2024, 1, 15);
+        public string Status { get; set; } = "Active";
+    }
+
+    private UserProfile _userProfile = new();
+    private AccountInfo _accountInfo = new();
+    private EditContext _editContext = default!;
+    private bool _profileDeleted = false;
+
+    protected override void OnInitialized()
+    {
+        _editContext = new EditContext(new { });
+    }
+
+    private void OnSaveCompleted(OnActionCompletedArgs<UserProfile> args)
+    {
+        if (args.ActionType == ActionType.Save)
+        {
+            _userProfile = args.Data;
+            Toast.ShowToast("Profile updated successfully!", ToastLevel.Success);
+        }
+        else if (args.ActionType == ActionType.Delete)
+        {
+            _profileDeleted = true;
+            Toast.ShowToast("Profile deleted!", ToastLevel.Success);
+        }
+    }
+
+    private void OnSaveCompleted(OnActionCompletedArgs<AccountInfo> args)
+    {
+        // This should never be called since the account info is readonly
+    }
+}

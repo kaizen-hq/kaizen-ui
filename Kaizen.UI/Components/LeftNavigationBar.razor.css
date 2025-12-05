@@ -45,7 +45,7 @@ nav {
 }
 
 ::deep .nav-item {
-    color: #d7d7d7;
+    color: var(--nav-link-color);
     border-radius: 4px;
     height: 3rem;
     display: flex;

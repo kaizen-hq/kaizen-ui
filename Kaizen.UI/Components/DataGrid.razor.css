@@ -3,6 +3,7 @@
     --grid-border-color: #ddd;
     --group-left-padding: var(--size-6);
     border: 1px solid var(--grid-border-color);
+    font-size: 0.95rem;
 }
 
 .santa-grid-scroll-container {

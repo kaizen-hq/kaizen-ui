@@ -59,7 +59,8 @@
 }
 
 .day-cell {
-    aspect-ratio: 1;
+    min-width: auto;
+    padding: 1px 6px;
     border: none;
     background: transparent;
     cursor: pointer;
@@ -67,6 +68,8 @@
     border-radius: 4px;
     transition: all 0.2s;
     outline: none;
+    color: #000;
+    font-weight: 400;
 }
 
 .day-cell:not(:disabled):hover {
@@ -74,17 +77,18 @@
 }
 
 .day-cell.other-month {
-    color: #ccc;
+    color: #999;
 }
 
 .day-cell.today {
     font-weight: 600;
-    color: #0078d6;
+    border: 1px solid #0078d6;
 }
 
 .day-cell.selected {
     background: #0078d6;
     color: white;
+    font-weight: 600;
 }
 
 .day-cell.selected:hover {
@@ -95,6 +99,7 @@
 .day-cell.selected-end {
     background: #0078d6;
     color: white;
+    font-weight: 600;
 }
 
 .day-cell.selected-start:hover,
@@ -103,12 +108,12 @@
 }
 
 .day-cell.in-range {
-    background: #e6f2ff;
+    background: #cce4ff;
     color: #0078d6;
 }
 
 .day-cell.in-range:hover {
-    background: #cce4ff;
+    background: #b3d9ff;
 }
 
 .day-cell:disabled {
