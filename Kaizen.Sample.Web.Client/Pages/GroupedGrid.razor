@@ -1,104 +1,25 @@
 @page "/GroupedGrid"
 @using Kaizen.UI
-@using System.ComponentModel.DataAnnotations
-@inject ToastService Toast
+@using Kaizen.Sample.Web.Client.Samples
+@using Kaizen.Sample.Web.Client.Services
+@inject SampleCodeService _sampleCodeService
+
+<PageTitle>Grouped Grid</PageTitle>
 
 <div class="page">
     <h2>Grouped Grid</h2>
+    <p>This example demonstrates a DataGrid with items organized by category groups. Each group displays a collapsible header with an item count, and rows can be edited or deleted inline.</p>
 
-    <DataGrid Items="_data" Pagination="_pagination" GroupBy="_groupBy">
-    <Header>
-        <GridColumnHeader Name="Code"/>
-        <GridColumnHeader Name="Description"/>
-        <GridColumnHeader Name="Quantity" Sort="x => x.Price"/>
-        <GridColumnHeader Name="Price"/>
-        <GridColumnHeader Name="Actions" Align="right" />
-    </Header>
-    <Grouping Context="groupKey">
-        <div class="group-header">
-            <Blazicon Svg="Lucide.FolderOpen" />
-            <span>@groupKey</span>
-            <span class="group-count">(@_data.Count(x => x.Category == groupKey) items)</span>
-        </div>
-    </Grouping>
-    <RowTemplate Context="workItem">
-        <Editable Item="workItem" OnActionCompleted="OnActionCompleted" TItem="WorkItem">
-            <ReadTemplate>
-                <span>@workItem.Code</span>
-                <span>@workItem.Description</span>
-                <span>@workItem.Quantity</span>
-                <span>@workItem.Price</span>
-            </ReadTemplate>
-            <EditTemplate Context="updatedItem">
-                <div>
-                    <InputText type="text" @bind-Value="@updatedItem.Code"/>
-                    <ValidationMessage For="() => updatedItem.Code"/>
-                </div>
-                <input type="text" @bind="updatedItem.Description" @bind:event="oninput" />
-                <div>
-                    <InputNumber @bind-Value="@updatedItem.Quantity"/>
-                    <ValidationMessage For="() => updatedItem.Quantity"/>
-                </div>
-                <input type="number" @bind="updatedItem.Price" @bind:event="oninput" />
-            </EditTemplate>
-        </Editable>
-    </RowTemplate>
-</DataGrid>
-    <Paginator Pagination="_pagination" />
+    <GroupedGridSample />
+
+    <CodeSample Code="@_codeSample" />
 </div>
 
 @code {
+    string _codeSample = string.Empty;
 
-    record WorkItem(string Code, string Description, int Quantity, decimal Price, string Category)
+    protected override void OnInitialized()
     {
-        [Required(ErrorMessage = "Code is required")]
-        public string Code { get; set; } = Code;
-        public string Description { get; set; } = Description;
-
-        [Range(1, int.MaxValue, ErrorMessage = "Quantity must be greater than 0")]
-        public int Quantity { get; set; } = Quantity;
-        public decimal Price { get; set; } = Price;
-        public string Category { get; set; } = Category;
-
-        public Guid Id { get; } = Guid.NewGuid();
-    };
-
-    Paginator.PaginationState _pagination = new()
-    {
-        PageSize = 5
-    };
-
-    IEnumerable<WorkItem> _data = new List<WorkItem>
-    {
-        new("A", "Item A", 1, 10, "Office Supplies"),
-        new("B", "Item B", 2, 20, "Office Supplies"),
-        new("C", "Item C", 3, 30, "Electronics"),
-        new("D", "Item D", 4, 40, "Electronics"),
-        new("E", "Item E", 5, 50, "Furniture"),
-        new("F", "Item F", 6, 60, "Furniture"),
-        new("G", "Item G", 7, 70, "Hardware"),
-        new("H", "Item H", 8, 80, "Hardware"),
-        new("I", "Item I", 9, 90, "Software"),
-        new("J", "Item J", 10, 100, "Software"),
-        new("K", "Item K", 11, 110, "Accessories"),
-    };
-
-    readonly System.Linq.Expressions.Expression<Func<WorkItem, string>> _groupBy = x => x.Category;
-
-    private void OnActionCompleted(OnActionCompletedArgs<WorkItem> args)
-    {
-        _data = args.ActionType switch
-        {
-            ActionType.Save => _data.Select(x => x.Id == args.Data.Id ? args.Data : x).ToList(),
-            ActionType.Delete => _data.Where(x => x.Id != args.Data.Id).ToList(),
-            _ => _data
-        };
-        var message = args.ActionType switch
-        {
-            ActionType.Save => "Work Item Saved",
-            ActionType.Delete => "Work Item Deleted",
-            _ => ""
-        };
-        Toast.ShowToast(message, ToastLevel.Success);
+        _codeSample = _sampleCodeService.GetSampleCode("GroupedGridSample");
     }
 }

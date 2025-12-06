@@ -9,6 +9,7 @@
     cursor: pointer;
     font-size: 14px;
     transition: all 0.15s ease;
+    color: #000;
 }
 
 .toolbar-button:hover:not(:disabled) {

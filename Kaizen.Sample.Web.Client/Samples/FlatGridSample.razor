@@ -1,0 +1,41 @@
+@using Kaizen.UI
+
+<DataGrid Items="_data" Pagination="_pagination">
+    <Header>
+        <GridColumnHeader Name="Code"/>
+        <GridColumnHeader Name="Description"/>
+        <GridColumnHeader Name="Quantity" Sort="x => x.Quantity"/>
+        <GridColumnHeader Name="Price"/>
+    </Header>
+    <RowTemplate Context="workItem">
+        <span>@workItem.Code</span>
+        <span>@workItem.Description</span>
+        <span>@workItem.Quantity</span>
+        <span>@workItem.Price.ToString("C")</span>
+    </RowTemplate>
+</DataGrid>
+<Paginator Pagination="_pagination" />
+
+@code {
+    record WorkItem(string Code, string Description, int Quantity, decimal Price, string Category);
+
+    Paginator.PaginationState _pagination = new()
+    {
+        PageSize = 10
+    };
+
+    IEnumerable<WorkItem> _data = new List<WorkItem>
+    {
+        new("WIDGET-001", "Premium Widget", 10, 99.99m, "Electronics"),
+        new("WIDGET-002", "Standard Widget", 25, 49.99m, "Electronics"),
+        new("GADGET-001", "Smart Gadget Pro", 5, 199.99m, "Electronics"),
+        new("TOOL-001", "Professional Hammer", 50, 29.99m, "Tools"),
+        new("TOOL-002", "Screwdriver Set", 30, 39.99m, "Tools"),
+        new("SUPPLY-001", "Office Paper Pack", 100, 9.99m, "Supplies"),
+        new("SUPPLY-002", "Stapler Deluxe", 40, 14.99m, "Supplies"),
+        new("BOOK-001", "Programming Guide", 15, 59.99m, "Books"),
+        new("BOOK-002", "Design Patterns", 20, 69.99m, "Books"),
+        new("FURNITURE-001", "Ergonomic Chair", 8, 299.99m, "Furniture"),
+        new("FURNITURE-002", "Standing Desk", 6, 499.99m, "Furniture"),
+    };
+}

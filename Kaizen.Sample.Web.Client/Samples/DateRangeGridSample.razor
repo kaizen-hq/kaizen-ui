@@ -1,0 +1,80 @@
+@using Kaizen.UI
+
+<div class="panel">
+    <Toolbar>
+        <DateRangePicker @bind-StartDate="@_startDate"
+                        @bind-EndDate="@_endDate"
+                        Placeholder="Select Date Range" />
+        <ToolbarButton Text="Export" Icon="Lucide.Plus" />
+    </Toolbar>
+
+    <DataGrid Items="@FilteredData()" Pagination="_pagination">
+        <Header>
+            <GridColumnHeader Name="Order ID"/>
+            <GridColumnHeader Name="Customer"/>
+            <GridColumnHeader Name="Date" Sort="x => x.OrderDate"/>
+            <GridColumnHeader Name="Amount"/>
+            <GridColumnHeader Name="Actions"/>
+        </Header>
+        <RowTemplate Context="order">
+            <span>@order.OrderId</span>
+            <span>@order.CustomerName</span>
+            <span>@order.OrderDate.ToString("MM/dd/yyyy")</span>
+            <span>@order.Amount.ToString("C")</span>
+            <div>
+                <button class="primary">View</button>
+            </div>
+        </RowTemplate>
+    </DataGrid>
+    <Paginator Pagination="_pagination" />
+</div>
+
+@code {
+    record Order(string OrderId, string CustomerName, DateTime OrderDate, decimal Amount);
+
+    Paginator.PaginationState _pagination = new()
+    {
+        PageSize = 10
+    };
+
+    private DateTime? _startDate;
+    private DateTime? _endDate;
+
+    private IEnumerable<Order> _allData = new List<Order>
+    {
+        new("ORD-001", "Acme Corporation", DateTime.Today.AddDays(-34), 1250.00m),
+        new("ORD-002", "Tech Solutions Inc", DateTime.Today.AddDays(-30), 890.50m),
+        new("ORD-003", "Global Industries", DateTime.Today.AddDays(-25), 2100.75m),
+        new("ORD-004", "Summit Partners", DateTime.Today.AddDays(-20), 675.00m),
+        new("ORD-005", "Innovative Designs", DateTime.Today.AddDays(-15), 1450.25m),
+        new("ORD-006", "Metro Systems", DateTime.Today.AddDays(-10), 3200.00m),
+        new("ORD-007", "Pacific Trading", DateTime.Today.AddDays(-7), 925.50m),
+        new("ORD-008", "Eastern Supplies", DateTime.Today.AddDays(-4), 1575.00m),
+        new("ORD-009", "Northern Electronics", DateTime.Today.AddDays(-2), 2890.00m),
+        new("ORD-010", "Southern Wholesale", DateTime.Today, 1125.75m),
+        new("ORD-011", "Central Manufacturing", DateTime.Today.AddDays(3), 4500.00m),
+        new("ORD-012", "Coastal Ventures", DateTime.Today.AddDays(5), 780.25m),
+        new("ORD-013", "Mountain Enterprises", DateTime.Today.AddDays(7), 1950.00m),
+        new("ORD-014", "Valley Distributors", DateTime.Today.AddDays(10), 2340.50m),
+        new("ORD-015", "Riverside Trading", DateTime.Today.AddDays(13), 1675.00m),
+        new("ORD-016", "Harbor Logistics", DateTime.Today.AddDays(15), 3100.25m),
+        new("ORD-017", "Lakeside Commerce", DateTime.Today.AddDays(17), 890.00m),
+        new("ORD-018", "Forest Industries", DateTime.Today.AddDays(20), 2225.75m),
+        new("ORD-019", "Desert Solutions", DateTime.Today.AddDays(23), 1450.00m),
+        new("ORD-020", "Prairie Partners", DateTime.Today.AddDays(25), 3750.50m),
+    };
+
+    private IEnumerable<Order> FilteredData() 
+    {
+        var query = _allData;
+        if (_startDate.HasValue) 
+        {
+            query = query.Where(x => x.OrderDate >= _startDate.Value);
+        }
+        if (_endDate.HasValue) 
+        {
+            query = query.Where(x => x.OrderDate <= _endDate.Value);
+        }
+        return query;
+    }
+}

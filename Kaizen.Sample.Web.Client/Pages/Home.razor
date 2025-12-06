@@ -3,21 +3,36 @@
 
 <PageTitle>Home</PageTitle>
 
-<Toaster />
+<div class="page">
+    <h1>Kaizen UI</h1>
 
-<h1>Kaizen UI</h1>
+    <p style="font-size: 1.2rem; margin: 2rem 0;">
+        A modern and flexible Blazor component library. 
+    </p>
 
-<div class="panel">
-    <header class="heading">
-        <span>Basic Grid Example</span>
-    </header>
-    <FlatGrid />
+    <div class="panel">
+        <h2>Features</h2>
+        <ul style="line-height: 2;">
+            <li><strong>DataGrid</strong> - Powerful grid with sorting, grouping, and pagination</li>
+            <li><strong>Editable</strong> - Edit records directly in grids and panels with validation</li>
+            <li><strong>Calendar</strong> - Interactive calendar with custom item templates</li>
+            <li><strong>Date Range Picker</strong> - Flexible date range selection for filtering</li>
+            <li><strong>Search & Filter</strong> - Real-time search</li>
+            <li><strong>Toaster</strong> - Provide feedback when something happens.</li>
+        </ul>
+    </div>
+
+    <div class="panel">
+        <h2>Examples</h2>
+        <p>Explore the examples in the navigation menu to see all components in action:</p>
+        <ul style="line-height: 2;">
+            <li><a href="/FlatGrid">Basic Grid</a> - Simple data grid with sorting and pagination</li>
+            <li><a href="/EditableGrid">Editable Grid</a> - Inline editing with validation</li>
+            <li><a href="/GroupedGrid">Grouped Grid</a> - Data organized by category</li>
+            <li><a href="/SearchableGrid">Searchable Grid</a> - Real-time search filtering</li>
+            <li><a href="/CalendarGrid">Calendar Integration</a> - Calendar with grid view</li>
+            <li><a href="/DateRangeGrid">Date Range Filtering</a> - Filter data by date range</li>
+            <li><a href="/EditablePanel">Editable Panel</a> - Form editing with validation</li>
+        </ul>
+    </div>
 </div>
-<br/>
-<div class="panel">
-    <h3 class="heading">Grouped Work Items</h3>
-    <GroupedGrid />
-</div>
-
-@code {
-}

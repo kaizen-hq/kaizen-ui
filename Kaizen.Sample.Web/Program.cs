@@ -1,5 +1,8 @@
+using Kaizen.Sample.Web.Client.Services;
 using Kaizen.Sample.Web.Components;
+using Kaizen.Sample.Web.Services;
 using Kaizen.UI;
+using Microsoft.AspNetCore.Components.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +11,10 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
+builder.Services.AddControllers();
 builder.Services.AddScoped<ToastService>();
+builder.Services.AddSingleton<ComponentSourceService>();
+builder.Services.AddSingleton<SampleCodeService>();
 
 var app = builder.Build();
 
@@ -30,6 +36,7 @@ app.UseHttpsRedirection();
 app.UseAntiforgery();
 
 app.MapStaticAssets();
+app.MapControllers();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()

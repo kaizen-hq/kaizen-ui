@@ -24,4 +24,8 @@
     <AdditionalFiles Include="Layout\MainLayout.razor" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="Samples\*.razor" />
+  </ItemGroup>
+
 </Project>

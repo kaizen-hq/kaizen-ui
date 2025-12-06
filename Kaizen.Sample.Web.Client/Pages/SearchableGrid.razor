@@ -1,232 +1,30 @@
 @page "/SearchableGrid"
 @rendermode InteractiveWebAssembly
 @using Kaizen.UI
-@using System.ComponentModel.DataAnnotations
-@inject ToastService Toast
+@using Kaizen.Sample.Web.Client.Samples
+@using Kaizen.Sample.Web.Client.Services
+@inject SampleCodeService _sampleCodeService
+
+<PageTitle>Searchable Grids</PageTitle>
 
 <Toaster />
 
 <div class="page">
     <h2>Searchable Grids</h2>
+    <p>This example shows how to add search functionality to grids. Use the search input to filter items by code or description in real-time.</p>
 
     <div class="panel">
-        <h3>Flat Grid with Search</h3>
-        <DataGrid Items="_filteredFlatData" Pagination="_flatPagination">
-            <ToolbarContent>
-                <input type="text"
-                       placeholder="Search by code or description..."
-                       @bind="_flatSearchTerm"
-                       @bind:event="oninput"
-                       @bind:after="FilterFlatData"
-                       class="search-input" />
-            </ToolbarContent>
-            <Header>
-                <GridColumnHeader Name="Code"/>
-                <GridColumnHeader Name="Description"/>
-                <GridColumnHeader Name="Quantity" Sort="x => x.Quantity"/>
-                <GridColumnHeader Name="Price"/>
-                <GridColumnHeader Name="Actions" Align="right" />
-            </Header>
-            <RowTemplate Context="workItem">
-                <Editable Item="workItem" OnActionCompleted="OnFlatActionCompleted" TItem="WorkItem">
-                    <ReadTemplate>
-                        <span>@workItem.Code</span>
-                        <span>@workItem.Description</span>
-                        <span>@workItem.Quantity</span>
-                        <span>@workItem.Price.ToString("C")</span>
-                    </ReadTemplate>
-                    <EditTemplate Context="updatedItem">
-                        <div>
-                            <InputText type="text" @bind-Value="@updatedItem.Code"/>
-                            <ValidationMessage For="() => updatedItem.Code"/>
-                        </div>
-                        <input type="text" @bind="updatedItem.Description" @bind:event="oninput" />
-                        <div>
-                            <InputNumber @bind-Value="@updatedItem.Quantity"/>
-                            <ValidationMessage For="() => updatedItem.Quantity"/>
-                        </div>
-                        <input type="number" @bind="updatedItem.Price" @bind:event="oninput" />
-                    </EditTemplate>
-                </Editable>
-            </RowTemplate>
-        </DataGrid>
-        <Paginator Pagination="_flatPagination" />
+        <SearchableGridSample />
     </div>
 
-    <div class="panel">
-        <h3>Grouped Grid with Search</h3>
-        <DataGrid Items="_filteredGroupedData" Pagination="_groupedPagination" GroupBy="x => x.GroupName">
-            <ToolbarContent>
-                <input type="text"
-                       placeholder="Search by code or description..."
-                       @bind="_groupedSearchTerm"
-                       @bind:event="oninput"
-                       @bind:after="FilterGroupedData"
-                       class="search-input" />
-            </ToolbarContent>
-            <Header>
-                <GridColumnHeader Name="Code"/>
-                <GridColumnHeader Name="Description"/>
-                <GridColumnHeader Name="Quantity" Sort="x => x.Quantity"/>
-                <GridColumnHeader Name="Price"/>
-                <GridColumnHeader Name="Actions" Align="right" />
-            </Header>
-            <RowTemplate Context="workItem">
-                <Editable Item="workItem" OnActionCompleted="OnGroupedActionCompleted" TItem="WorkItem">
-                    <ReadTemplate>
-                        <span>@workItem.Code</span>
-                        <span>@workItem.Description</span>
-                        <span>@workItem.Quantity</span>
-                        <span>@workItem.Price.ToString("C")</span>
-                    </ReadTemplate>
-                    <EditTemplate Context="updatedItem">
-                        <div>
-                            <InputText type="text" @bind-Value="@updatedItem.Code"/>
-                            <ValidationMessage For="() => updatedItem.Code"/>
-                        </div>
-                        <input type="text" @bind="updatedItem.Description" @bind:event="oninput" />
-                        <div>
-                            <InputNumber @bind-Value="@updatedItem.Quantity"/>
-                            <ValidationMessage For="() => updatedItem.Quantity"/>
-                        </div>
-                        <input type="number" @bind="updatedItem.Price" @bind:event="oninput" />
-                    </EditTemplate>
-                </Editable>
-            </RowTemplate>
-        </DataGrid>
-        <Paginator Pagination="_groupedPagination" />
-    </div>
+    <CodeSample Code="@_codeSample" />
 </div>
 
 @code {
-    record WorkItem(string Code, string Description, int Quantity, decimal Price, string GroupName)
-    {
-        [Required]
-        public string Code { get; set; } = Code;
-        public string Description { get; set; } = Description;
-
-        [Range(1, int.MaxValue, ErrorMessage = "Quantity must be greater than 0")]
-        public int Quantity { get; set; } = Quantity;
-        public decimal Price { get; set; } = Price;
-        public string GroupName { get; set; } = GroupName;
-
-        public Guid Id { get; } = Guid.NewGuid();
-    };
-
-    // Flat grid data
-    private string _flatSearchTerm = "";
-    private IEnumerable<WorkItem> _flatData = new List<WorkItem>();
-    private IEnumerable<WorkItem> _filteredFlatData = new List<WorkItem>();
-    private Paginator.PaginationState _flatPagination = new() { PageSize = 5 };
-
-    // Grouped grid data
-    private string _groupedSearchTerm = "";
-    private IEnumerable<WorkItem> _groupedData = new List<WorkItem>();
-    private IEnumerable<WorkItem> _filteredGroupedData = new List<WorkItem>();
-    private Paginator.PaginationState _groupedPagination = new() { PageSize = 5 };
+    string _codeSample = string.Empty;
 
     protected override void OnInitialized()
     {
-        // Initialize flat data
-        _flatData = new List<WorkItem>
-        {
-            new("WIDGET-001", "Premium Widget", 10, 99.99m, "Electronics"),
-            new("WIDGET-002", "Standard Widget", 25, 49.99m, "Electronics"),
-            new("GADGET-001", "Smart Gadget Pro", 5, 199.99m, "Electronics"),
-            new("TOOL-001", "Professional Hammer", 50, 29.99m, "Tools"),
-            new("TOOL-002", "Screwdriver Set", 30, 39.99m, "Tools"),
-            new("SUPPLY-001", "Office Paper Pack", 100, 9.99m, "Supplies"),
-            new("SUPPLY-002", "Stapler Deluxe", 40, 14.99m, "Supplies"),
-            new("BOOK-001", "Programming Guide", 15, 59.99m, "Books"),
-            new("BOOK-002", "Design Patterns", 20, 69.99m, "Books"),
-            new("FURNITURE-001", "Ergonomic Chair", 8, 299.99m, "Furniture"),
-            new("FURNITURE-002", "Standing Desk", 6, 499.99m, "Furniture"),
-        };
-        _filteredFlatData = _flatData;
-
-        // Initialize grouped data (same data, but will be grouped)
-        _groupedData = new List<WorkItem>
-        {
-            new("WIDGET-001", "Premium Widget", 10, 99.99m, "Electronics"),
-            new("WIDGET-002", "Standard Widget", 25, 49.99m, "Electronics"),
-            new("GADGET-001", "Smart Gadget Pro", 5, 199.99m, "Electronics"),
-            new("TOOL-001", "Professional Hammer", 50, 29.99m, "Tools"),
-            new("TOOL-002", "Screwdriver Set", 30, 39.99m, "Tools"),
-            new("SUPPLY-001", "Office Paper Pack", 100, 9.99m, "Supplies"),
-            new("SUPPLY-002", "Stapler Deluxe", 40, 14.99m, "Supplies"),
-            new("BOOK-001", "Programming Guide", 15, 59.99m, "Books"),
-            new("BOOK-002", "Design Patterns", 20, 69.99m, "Books"),
-            new("FURNITURE-001", "Ergonomic Chair", 8, 299.99m, "Furniture"),
-            new("FURNITURE-002", "Standing Desk", 6, 499.99m, "Furniture"),
-        };
-        _filteredGroupedData = _groupedData;
-    }
-
-    private void FilterFlatData()
-    {
-        if (string.IsNullOrWhiteSpace(_flatSearchTerm))
-        {
-            _filteredFlatData = _flatData;
-        }
-        else
-        {
-            _filteredFlatData = _flatData.Where(x =>
-                x.Code.Contains(_flatSearchTerm, StringComparison.OrdinalIgnoreCase) ||
-                x.Description.Contains(_flatSearchTerm, StringComparison.OrdinalIgnoreCase)
-            ).ToList();
-        }
-    }
-
-    private void FilterGroupedData()
-    {
-        if (string.IsNullOrWhiteSpace(_groupedSearchTerm))
-        {
-            _filteredGroupedData = _groupedData;
-        }
-        else
-        {
-            _filteredGroupedData = _groupedData.Where(x =>
-                x.Code.Contains(_groupedSearchTerm, StringComparison.OrdinalIgnoreCase) ||
-                x.Description.Contains(_groupedSearchTerm, StringComparison.OrdinalIgnoreCase)
-            ).ToList();
-        }
-    }
-
-    private void OnFlatActionCompleted(OnActionCompletedArgs<WorkItem> args)
-    {
-        _flatData = args.ActionType switch
-        {
-            ActionType.Save => _flatData.Select(x => x.Id == args.Data.Id ? args.Data : x).ToList(),
-            ActionType.Delete => _flatData.Where(x => x.Id != args.Data.Id).ToList(),
-            _ => _flatData
-        };
-        FilterFlatData();
-
-        var message = args.ActionType switch
-        {
-            ActionType.Save => "Work Item Saved",
-            ActionType.Delete => "Work Item Deleted",
-            _ => ""
-        };
-        Toast.ShowToast(message, ToastLevel.Success);
-    }
-
-    private void OnGroupedActionCompleted(OnActionCompletedArgs<WorkItem> args)
-    {
-        _groupedData = args.ActionType switch
-        {
-            ActionType.Save => _groupedData.Select(x => x.Id == args.Data.Id ? args.Data : x).ToList(),
-            ActionType.Delete => _groupedData.Where(x => x.Id != args.Data.Id).ToList(),
-            _ => _groupedData
-        };
-        FilterGroupedData();
-
-        var message = args.ActionType switch
-        {
-            ActionType.Save => "Work Item Saved",
-            ActionType.Delete => "Work Item Deleted",
-            _ => ""
-        };
-        Toast.ShowToast(message, ToastLevel.Success);
+        _codeSample = _sampleCodeService.GetSampleCode("SearchableGridSample");
     }
 }

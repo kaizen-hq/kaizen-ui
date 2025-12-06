@@ -1,0 +1,21 @@
+@inject IJSRuntime JS
+
+<details class="code-sample">
+    <summary>View Code</summary>
+    <pre><code class="language-html" @ref="_codeElement">@Code</code></pre>
+</details>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Code { get; set; } = string.Empty;
+
+    private ElementReference _codeElement;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("hljs.highlightElement", _codeElement);
+        }
+    }
+}

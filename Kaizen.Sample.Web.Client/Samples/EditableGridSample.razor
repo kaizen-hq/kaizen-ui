@@ -1,0 +1,89 @@
+@using Kaizen.UI
+@using System.ComponentModel.DataAnnotations
+@inject ToastService Toast
+
+<DataGrid Items="_data" Pagination="_pagination">
+    <Header>
+        <GridColumnHeader Name="Code"/>
+        <GridColumnHeader Name="Description"/>
+        <GridColumnHeader Name="Quantity" Sort="x => x.Quantity"/>
+        <GridColumnHeader Name="Price"/>
+        <GridColumnHeader Name="Actions" Align="right" />
+    </Header>
+    <RowTemplate Context="workItem">
+        <Editable Item="workItem" OnActionCompleted="OnActionCompleted" TItem="WorkItem">
+            <ReadTemplate>
+                <span>@workItem.Code</span>
+                <span>@workItem.Description</span>
+                <span>@workItem.Quantity</span>
+                <span>@workItem.Price.ToString("C")</span>
+            </ReadTemplate>
+            <EditTemplate Context="updatedItem">
+                <div>
+                    <InputText type="text" @bind-Value="@updatedItem.Code"/>
+                    <ValidationMessage For="() => updatedItem.Code"/>
+                </div>
+                <input type="text" @bind="updatedItem.Description" @bind:event="oninput" />
+                <div>
+                    <InputNumber @bind-Value="@updatedItem.Quantity"/>
+                    <ValidationMessage For="() => updatedItem.Quantity"/>
+                </div>
+                <input type="number" @bind="updatedItem.Price" @bind:event="oninput" />
+            </EditTemplate>
+        </Editable>
+    </RowTemplate>
+</DataGrid>
+<Paginator Pagination="_pagination" />
+
+@code {
+    record WorkItem(string Code, string Description, int Quantity, decimal Price, string GroupName)
+    {
+        [Required]
+        public string Code { get; set; } = Code;
+        public string Description { get; set; } = Description;
+
+        [Range(1, int.MaxValue, ErrorMessage = "Quantity must be greater than 0")]
+        public int Quantity { get; set; } = Quantity;
+        public decimal Price { get; set; } = Price;
+        public string GroupName { get; set; } = GroupName;
+
+        public Guid Id { get; } = Guid.NewGuid();
+    }
+
+    Paginator.PaginationState _pagination = new()
+    {
+        PageSize = 10
+    };
+
+    IEnumerable<WorkItem> _data = new List<WorkItem>
+    {
+        new("WIDGET-001", "Premium Widget", 10, 99.99m, "Electronics"),
+        new("WIDGET-002", "Standard Widget", 25, 49.99m, "Electronics"),
+        new("GADGET-001", "Smart Gadget Pro", 5, 199.99m, "Electronics"),
+        new("TOOL-001", "Professional Hammer", 50, 29.99m, "Tools"),
+        new("TOOL-002", "Screwdriver Set", 30, 39.99m, "Tools"),
+        new("SUPPLY-001", "Office Paper Pack", 100, 9.99m, "Supplies"),
+        new("SUPPLY-002", "Stapler Deluxe", 40, 14.99m, "Supplies"),
+        new("BOOK-001", "Programming Guide", 15, 59.99m, "Books"),
+        new("BOOK-002", "Design Patterns", 20, 69.99m, "Books"),
+        new("FURNITURE-001", "Ergonomic Chair", 8, 299.99m, "Furniture"),
+        new("FURNITURE-002", "Standing Desk", 6, 499.99m, "Furniture"),
+    };
+
+    private void OnActionCompleted(OnActionCompletedArgs<WorkItem> args)
+    {
+        _data = args.ActionType switch
+        {
+            ActionType.Save => _data.Select(x => x.Id == args.Data.Id ? args.Data : x).ToList(),
+            ActionType.Delete => _data.Where(x => x.Id != args.Data.Id).ToList(),
+            _ => _data
+        };
+        var message = args.ActionType switch
+        {
+            ActionType.Save => "Work Item Saved",
+            ActionType.Delete => "Work Item Deleted",
+            _ => ""
+        };
+        Toast.ShowToast(message, ToastLevel.Success);
+    }
+}
