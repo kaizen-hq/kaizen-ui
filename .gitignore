@@ -60,3 +60,5 @@ $RECYCLE.BIN/
 *.sln.iml
 
 .DS_Store
+
+**/publish/*

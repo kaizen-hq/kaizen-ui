@@ -1,0 +1,9 @@
+[build]
+  base = "Kaizen.Sample.Web.Client"
+  command = "dotnet publish -c Release -o ./publish"
+  publish = "Kaizen.Sample.Web.Client/publish/wwwroot"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
