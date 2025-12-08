@@ -8,7 +8,9 @@
         @NavToggle
     </div>
     <nav>
-        @ChildContent
+        <CascadingValue Value="this">
+            @ChildContent
+        </CascadingValue>
     </nav>
 </div>
 
@@ -22,8 +24,9 @@
         @<Blazicon Svg="Lucide.ChevronRight" /> :
         @<Blazicon Svg="Lucide.ChevronLeft" />;
 
-    private void ToggleNav()
+    public void ToggleNav()
     {
         IsCollapsed = !IsCollapsed;
+        StateHasChanged();
     }
 }

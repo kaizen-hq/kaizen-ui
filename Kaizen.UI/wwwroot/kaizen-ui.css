@@ -80,7 +80,6 @@ aside {
             "main"
             "footer";
         column-gap: 0;
-        row-gap: var(--size-4);
     }
 
     /* Override collapsed state for mobile */

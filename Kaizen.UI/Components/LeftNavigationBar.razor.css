@@ -24,13 +24,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
     color: #666;
 }
 
 .nav-toggle.mobile {
     display: none;
     right: 16px;
-    top: 32px;
 }
 
 .nav-toggle:hover {
@@ -55,6 +55,7 @@ nav {
     text-decoration: none;
     gap: var(--size-2);
     transition: background-color 0.2s;
+    overflow: hidden;
 }
 
 ::deep .nav-item.active {
@@ -105,7 +106,8 @@ nav {
 
     .nav-container.collapsed {
         width: 0;
-        height: 0;
+        position: absolute;
+        z-index: 1000;
     }
     
     .nav-toggle {

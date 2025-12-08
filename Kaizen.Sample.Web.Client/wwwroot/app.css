@@ -38,6 +38,10 @@ a, .btn-link {
         content: "An error has occurred."
     }
 
+#blazor-error-ui {
+    display: none;
+}
+
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
