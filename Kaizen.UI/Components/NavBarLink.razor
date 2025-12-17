@@ -1,4 +1,6 @@
+@inject IJSRuntime Js
 @using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.JSInterop
 
 <NavLink class="@Class" href="@Href" Match="@Match" @onclick="HandleClick">
     @ChildContent
@@ -20,8 +22,12 @@
     [Parameter]
     public NavLinkMatch Match { get; set; } = NavLinkMatch.Prefix;
 
-    private void HandleClick()
+    private async Task HandleClick()
     {
-        NavBar?.ToggleNav();
+        var screenWidth = await Js.InvokeAsync<double>("kaizenUI.getScreenWidth");
+        if (screenWidth < 768) 
+        {
+            NavBar?.ToggleNav();
+        }
     }
 }
