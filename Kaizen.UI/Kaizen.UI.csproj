@@ -4,10 +4,40 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- NuGet Package Metadata -->
+    <PackageId>KaizenIO.UI</PackageId>
+    <Version>0.0.1</Version>
+    <Authors>Zach Burke</Authors>
+    <Company>Kaizen</Company>
+    <Product>KaizenIO.UI</Product>
+
+    <!-- Package Description -->
+    <Description>A modern Blazor component library providing reusable UI components including DataGrid with inline editing, Toast notifications, responsive layouts, and more for building web applications.</Description>
+    <PackageTags>blazor;components;ui;datagrid;blazor-webassembly;wasm;razor-components;blazor-components;toast;notifications</PackageTags>
+
+    <!-- Package URLs (update these with your actual repository) -->
+    <PackageProjectUrl>https://github.com/yourusername/kaizen-ui</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/yourusername/kaizen-ui</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+
+    <!-- License -->
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+    <!-- Optional: Add README to package -->
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+
+    <!-- Package Release Notes -->
+    <PackageReleaseNotes>Initial release of KaizenIO.UI component library.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
     <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <!-- Include README in package -->
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
