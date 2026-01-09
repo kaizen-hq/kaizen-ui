@@ -13,7 +13,7 @@
 
     @if (isOpen)
     {
-        <div @ref="popup" class="date-range-calendars" @onblur="ClosePopup" tabindex="-1" @onmousedown="PreventBlur">
+        <div @ref="popup" class="date-range-calendars" @onblur="ClosePopup" tabindex="-1" onmousedown="event.preventDefault()">
             <DatePicker Value="@(StartDate ?? DateTime.Today)"
                        ValueChanged="@OnDateSelected"
                        ShowActionButtons="false"
@@ -58,25 +58,15 @@
     private bool isOpen { get; set; } = false;
     private ElementReference? popup;
 
-    // Hack: to avoid hiding the popup when items on the inside are clicked
-    private bool itemClicked = false;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender) 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (popup.HasValue && isOpen)
             await popup.Value.FocusAsync();
     }
 
-    private void PreventBlur() 
+    private void ClosePopup()
     {
-        itemClicked = true; 
-    }
-
-    private async Task ClosePopup() 
-    {
-        await Task.Delay(100);
-        if (!itemClicked) isOpen = false;
-        itemClicked = false;
+        isOpen = false;
     }
 
     private void ToggleCalendar()

@@ -62,7 +62,8 @@
     background: white;
 }
 
-.item > ::deep * {
+.item > ::deep *,
+.item > ::deep .editable > * {
     padding: var(--size-2);
 }
 

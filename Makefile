@@ -15,7 +15,7 @@ help:
 	@echo "  make publish        - Build and publish for production (outputs to ./publish/wwwroot)"
 	@echo "  make deploy         - Build and deploy to Netlify"
 	@echo "  make nuget-pack     - Pack Kaizen.UI as a NuGet package"
-	@echo "  make nuget-publish  - Pack and publish Kaizen.UI to NuGet (requires .env with NUGET_API_KEY)"
+	@echo "  make nuget-publish  - Pack and publish Kaizen.UI to NuGet (requires NUGET_API_KEY env var)"
 	@echo ""
 	@echo "Azure Static Web Apps:"
 	@echo "  make swa-create     - Create Azure Static Web App (requires az cli login)"
@@ -26,6 +26,7 @@ help:
 	@echo "  AZURE_SWA_NAME        - Static Web App name (default: kaizen-ui)"
 	@echo "  AZURE_LOCATION        - Azure region (default: centralus)"
 	@echo "  AZURE_SWA_TOKEN       - Deployment token (required for swa-deploy)"
+	@echo "  NUGET_API_KEY         - NuGet API key (required for nuget-publish)"
 	@echo ""
 
 watch:
@@ -51,15 +52,10 @@ nuget-pack:
 
 nuget-publish: nuget-pack
 	@echo "Publishing Kaizen.UI to NuGet..."
-	@if [ ! -f .env ]; then \
-		echo "Error: .env file not found. Create a .env file with NUGET_API_KEY=your_api_key"; \
+	@if [ -z "$$NUGET_API_KEY" ]; then \
+		echo "Error: NUGET_API_KEY environment variable not set"; \
 		exit 1; \
 	fi
-	@export $$(cat .env | xargs) && \
-	if [ -z "$$NUGET_API_KEY" ]; then \
-		echo "Error: NUGET_API_KEY not set in .env file"; \
-		exit 1; \
-	fi && \
 	dotnet nuget push Kaizen.UI/bin/Release/KaizenIO.UI.*.nupkg \
 		--api-key $$NUGET_API_KEY \
 		--source https://api.nuget.org/v3/index.json

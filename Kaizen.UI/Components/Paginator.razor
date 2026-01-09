@@ -1,8 +1,8 @@
 ﻿@using System.Diagnostics.CodeAnalysis
 <div class="pager">
-    <div class="page-number">
-        Page @(Pagination.PageNumber + 1) of @(Pagination.NumberOfPages + 1)
-    </div>
+    <p>
+        Showing @Pagination.PageSize of @Pagination.TotalItems Items
+    </p>
     @if (CanChangePageSize) 
     {
         <div class="page-size">
@@ -16,6 +16,9 @@
         </div>
     }
     <div class="page-buttons">
+        <span class="page-number">
+            @(Pagination.PageNumber + 1) of @(Pagination.NumberOfPages + 1)
+        </span>
         <button type="button" @onclick="FirstPage">
             <Blazicon Svg="Lucide.ChevronsLeft" />
         </button>

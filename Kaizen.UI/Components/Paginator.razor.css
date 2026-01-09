@@ -5,6 +5,24 @@
     padding: var(--size-2);
 }
 
+/* 
+* Try to center align text next to the buttons
+*/
+.pager > *:not(:last-child),
+.page-number {
+    position: relative;
+    top: -2px;
+}
+
+.page-number {
+    display: inline-block;
+    margin-right: var(--size-2);
+}
+
+.page-size select {
+    width: auto;
+}
+
 button {
     background-color: var(--gray-1);
     border: 1px solid var(--gray-2);
@@ -13,4 +31,5 @@ button {
     cursor: pointer;
     color: var(--blue-1);
     font-size: 24px;
+    min-width: 24px;
 }

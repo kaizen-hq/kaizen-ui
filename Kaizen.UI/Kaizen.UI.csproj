@@ -7,7 +7,7 @@
 
     <!-- NuGet Package Metadata -->
     <PackageId>KaizenIO.UI</PackageId>
-    <Version>0.0.2</Version>
+    <Version>0.0.3</Version>
     <Authors>Zach Burke</Authors>
     <Company>Kaizen</Company>
     <Product>KaizenIO.UI</Product>
@@ -28,7 +28,12 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
 
     <!-- Package Release Notes -->
-    <PackageReleaseNotes>Initial release of KaizenIO.UI component library.</PackageReleaseNotes>
+    <PackageReleaseNotes>
+Fixed:
+- DateRangePicker unable to navigate to previous months
+- New default styles for select element
+- Fixed enter key not saving open rows past the first row
+    </PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

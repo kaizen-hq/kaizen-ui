@@ -2,33 +2,39 @@
 @using System.Diagnostics.CodeAnalysis
 
 @if (Readonly) {
-    @ReadTemplate
+    <div class="editable editable-readonly" style="display: contents">
+        @ReadTemplate
+    </div>
 }
 else if (_isEditMode && !Readonly)
 {
-    @EditTemplate(_itemCopy)
-    <div class="actions">
-        <button @onclick="Save">
-            <Blazicon Svg="Lucide.Save" />
-        </button>
-        <button @onclick="CancelEditMode">
-            <Blazicon Svg="Lucide.X" />
-        </button>
+    <div class="editable editable-editing" style="display: contents" @onkeydown="HandleKeyDown">
+        @EditTemplate(_itemCopy)
+        <div class="actions">
+            <button type="button" @onclick="Save">
+                <Blazicon Svg="Lucide.Save" />
+            </button>
+            <button type="button" @onclick="CancelEditMode">
+                <Blazicon Svg="Lucide.X" />
+            </button>
+        </div>
     </div>
 }
 else
 {
-    @ReadTemplate
-    <div class="actions">
-        <button @onclick="StartEditMode">
-            <Blazicon Svg="Lucide.Pencil" />
-        </button>
-        @if(CanDelete) 
-        {
-            <button @onclick="Delete">
-                <Blazicon Svg="Lucide.Trash2" />
+    <div class="editable editable-read" style="display: contents">
+        @ReadTemplate
+        <div class="actions">
+            <button type="button" @onclick="StartEditMode">
+                <Blazicon Svg="Lucide.Pencil" />
             </button>
-        }
+            @if(CanDelete)
+            {
+                <button type="button" @onclick="Delete">
+                    <Blazicon Svg="Lucide.Trash2" />
+                </button>
+            }
+        </div>
     </div>
 }
 
@@ -93,5 +99,13 @@ else
     {
         await OnActionCompleted.InvokeAsync(new OnActionCompletedArgs<TItem>(ActionType.Save, _itemCopy));
         _isEditMode = false;
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await Save();
+        }
     }
 }

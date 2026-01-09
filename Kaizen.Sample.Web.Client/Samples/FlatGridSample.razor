@@ -14,7 +14,7 @@
         <span>@workItem.Price.ToString("C")</span>
     </RowTemplate>
 </DataGrid>
-<Paginator Pagination="_pagination" />
+<Paginator Pagination="_pagination" CanChangePageSize="true" />
 
 @code {
     record WorkItem(string Code, string Description, int Quantity, decimal Price, string Category);
