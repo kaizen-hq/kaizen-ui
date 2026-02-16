@@ -71,7 +71,7 @@
                                 <ChildContent>
                                     @foreach(var item in group)
                                     {
-                                        <div class="@GetRowCssClass(item)" @onclick="() => OnRowClick(item)">
+                                        <div class="@GetRowCssClass(item)" data-test-id="@(RowDataTestId?.Invoke(item))" @onclick="() => OnRowClick(item)">
                                             @RowTemplate(item)
                                         </div>
                                     }
@@ -84,7 +84,7 @@
                 {
                     @foreach (var item in Query)
                     {
-                        <div class="@GetRowCssClass(item)" @onclick="() => OnRowClick(item)">
+                        <div class="@GetRowCssClass(item)" data-test-id="@(RowDataTestId?.Invoke(item))" @onclick="() => OnRowClick(item)">
                             @RowTemplate(item)
                         </div>
                     }
@@ -115,6 +115,9 @@
 
     [Parameter]
     public Func<TItem, string> RowCssClass { get; set; } = (item) => "";
+
+    [Parameter]
+    public Func<TItem, string>? RowDataTestId { get; set; }
 
     [Parameter]
     public Expression<Func<TItem, string>>? GroupBy { get; set; }

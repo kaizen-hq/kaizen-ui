@@ -7,7 +7,7 @@
 
     <!-- NuGet Package Metadata -->
     <PackageId>KaizenIO.UI</PackageId>
-    <Version>0.0.3</Version>
+    <Version>0.0.4</Version>
     <Authors>Zach Burke</Authors>
     <Company>Kaizen</Company>
     <Product>KaizenIO.UI</Product>
@@ -29,10 +29,8 @@
 
     <!-- Package Release Notes -->
     <PackageReleaseNotes>
-Fixed:
-- DateRangePicker unable to navigate to previous months
-- New default styles for select element
-- Fixed enter key not saving open rows past the first row
+Added:
+- DataGrid now supports RowDataTestId parameter to specify a custom data-test-id attribute for each row
     </PackageReleaseNotes>
   </PropertyGroup>
 
