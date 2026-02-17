@@ -7,7 +7,7 @@
 
     <!-- NuGet Package Metadata -->
     <PackageId>KaizenIO.UI</PackageId>
-    <Version>0.0.4</Version>
+    <Version>0.0.5-preview.1</Version>
     <Authors>Zach Burke</Authors>
     <Company>Kaizen</Company>
     <Product>KaizenIO.UI</Product>
@@ -30,7 +30,7 @@
     <!-- Package Release Notes -->
     <PackageReleaseNotes>
 Added:
-- DataGrid now supports RowDataTestId parameter to specify a custom data-test-id attribute for each row
+- GridColumnHeader now supports ChildContent to allow custom content rendering, defaulting to the column name
     </PackageReleaseNotes>
   </PropertyGroup>
 
