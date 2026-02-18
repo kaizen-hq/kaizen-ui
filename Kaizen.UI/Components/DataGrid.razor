@@ -213,7 +213,7 @@
                 Pagination = state;
                 StateHasChanged();
             };
-            Pagination.NumberOfPages = (int)Math.Ceiling((decimal)(Items!.Count() / Pagination.PageSize));
+            Pagination.NumberOfPages = Math.Max(0, (int)Math.Ceiling(Items!.Count() / (decimal)Pagination.PageSize) - 1);
             Pagination.TotalItems = Items?.Count() ?? 0;
             Pagination.Notify();
         }
@@ -240,9 +240,12 @@
     {
         if (Pagination is not null)
         {
-            Pagination.NumberOfPages = (int)Math.Ceiling((decimal)(Items!.Count() / Pagination.PageSize));
+            var newNumberOfPages = Math.Max(0, (int)Math.Ceiling(Items!.Count() / (decimal)Pagination.PageSize) - 1);
+            Pagination.NumberOfPages = newNumberOfPages;
             Pagination.TotalItems = Items?.Count() ?? 0;
-            Pagination.PageNumber = 0;
+            // Only reset page if current page is now out of bounds
+            if (Pagination.PageNumber > newNumberOfPages)
+                Pagination.PageNumber = newNumberOfPages;
             Pagination.Notify();
         }
     }

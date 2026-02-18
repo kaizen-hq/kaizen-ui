@@ -1,9 +1,9 @@
 ﻿@using System.Diagnostics.CodeAnalysis
 <div class="pager">
-    <p>
-        Showing @Pagination.PageSize of @Pagination.TotalItems Items
-    </p>
-    @if (CanChangePageSize) 
+    <div class="page-number">
+        Page @(Pagination.PageNumber + 1) of @(Pagination.NumberOfPages + 1) for <b>@Pagination.TotalItems</b> Total Items
+    </div>
+    @if (CanChangePageSize)
     {
         <div class="page-size">
             <label for="page-size">Page Size</label>
@@ -16,9 +16,6 @@
         </div>
     }
     <div class="page-buttons">
-        <span class="page-number">
-            @(Pagination.PageNumber + 1) of @(Pagination.NumberOfPages + 1)
-        </span>
         <button type="button" @onclick="FirstPage">
             <Blazicon Svg="Lucide.ChevronsLeft" />
         </button>
@@ -48,7 +45,7 @@
         if (e.Value is null) return;
         var pageSize = int.Parse(e.Value.ToString() ?? "10");
         Pagination.PageSize = pageSize;
-        Pagination.NumberOfPages = (int)Math.Ceiling((decimal)(Pagination.TotalItems / Pagination.PageSize));
+        Pagination.NumberOfPages = Math.Max(0, (int)Math.Ceiling(Pagination.TotalItems / (decimal)Pagination.PageSize) - 1);
         Pagination.Notify();
     }
 

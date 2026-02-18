@@ -5,6 +5,10 @@
 else
 {
     <button class="toolbar-button" @onclick="OnClick" disabled="@Disabled" title="@TooltipText">
+        @if (IsActive)
+        {
+            <Blazicon Svg="Lucide.Check" />
+        }
         @if (Icon != null)
         {
             <Blazicon Svg="@Icon" />
@@ -31,6 +35,9 @@ else
 
     [Parameter]
     public bool IsSeparator { get; set; }
+
+    [Parameter]
+    public bool IsActive { get; set; }
 
     [Parameter]
     public EventCallback OnClick { get; set; }

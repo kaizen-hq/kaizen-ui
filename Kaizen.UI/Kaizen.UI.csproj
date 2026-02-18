@@ -7,7 +7,7 @@
 
     <!-- NuGet Package Metadata -->
     <PackageId>KaizenIO.UI</PackageId>
-    <Version>0.0.5-preview.1</Version>
+    <Version>0.0.5-preview.2</Version>
     <Authors>Zach Burke</Authors>
     <Company>Kaizen</Company>
     <Product>KaizenIO.UI</Product>
@@ -31,6 +31,11 @@
     <PackageReleaseNotes>
 Added:
 - GridColumnHeader now supports ChildContent to allow custom content rendering, defaulting to the column name
+- ToolbarButton now supports IsActive parameter that displays a check icon when active
+
+Fixed:
+- Paginator and DataGrid pagination calculation was incorrect due to integer division
+- DataGrid no longer resets to page 0 when parameters change; only resets if current page is out of bounds
     </PackageReleaseNotes>
   </PropertyGroup>
 
