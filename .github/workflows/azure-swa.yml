@@ -22,6 +22,9 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
+      - name: Install WASM workload
+        run: dotnet workload install wasm-tools-net9
+
       - name: Publish Blazor WASM
         run: dotnet publish Kaizen.Sample.Web.Client -c Release -o publish
 
