@@ -115,6 +115,9 @@
     public Func<TItem, string>? TextField { get; set; }
 
     [Parameter]
+    public EventCallback<string> SearchChanged { get; set; }
+
+    [Parameter]
     public Func<TItem, TValue>? ValueField { get; set; }
 
     [Parameter]
@@ -159,9 +162,10 @@
         }
     }
 
-    private void OnInput(ChangeEventArgs e)
+    private async Task OnInput(ChangeEventArgs e)
     {
         _searchText = e.Value?.ToString() ?? "";
+        await SearchChanged.InvokeAsync(_searchText);
         FilterItems();
 
         if (!showDropdown && AllowFiltering)
