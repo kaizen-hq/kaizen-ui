@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `GridColumnHeader` now supports `ChildContent` to allow custom content rendering, defaulting to the column name
 - `ToolbarButton` now supports `IsActive` parameter that displays a check icon when active
+- `SearchChanged` callback for `ComboBox`, allows for fetching data when searching
 
 ### Fixed
 - `Paginator` and `DataGrid` pagination calculation was incorrect due to integer division
