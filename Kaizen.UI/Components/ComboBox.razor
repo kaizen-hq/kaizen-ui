@@ -1,3 +1,4 @@
+@using System.Text
 @typeparam TItem
 @typeparam TValue
 
@@ -109,13 +110,13 @@
     public EventCallback<TValue> ValueChanged { get; set; }
 
     [Parameter]
+    public EventCallback<string> SearchChanged { get; set; }
+
+    [Parameter]
     public IEnumerable<TItem> DataSource { get; set; } = Enumerable.Empty<TItem>();
 
     [Parameter]
     public Func<TItem, string>? TextField { get; set; }
-
-    [Parameter]
-    public EventCallback<string> SearchChanged { get; set; }
 
     [Parameter]
     public Func<TItem, TValue>? ValueField { get; set; }
@@ -268,8 +269,15 @@
     {
         if (AllowFiltering && !string.IsNullOrWhiteSpace(_searchText))
         {
+            var searchWords = _searchText.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
             filteredItems = DataSource
-                .Where(item => GetItemText(item).Contains(_searchText, StringComparison.OrdinalIgnoreCase))
+                .Where(item =>
+                {
+                    var text = GetItemText(item);
+                    return searchWords.All(word =>
+                        text.Contains(word, StringComparison.OrdinalIgnoreCase));
+                })
                 .Take(MaxResults)
                 .ToList();
         }
@@ -322,15 +330,42 @@
     {
         if (string.IsNullOrEmpty(_searchText)) return text;
 
-        var searchLower = _searchText.ToLower();
-        var index = text.ToLower().IndexOf(searchLower, StringComparison.Ordinal);
+        var searchWords = _searchText.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var textWords = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var result = new StringBuilder();
 
-        if (index == -1) return text;
+        foreach (var word in textWords)
+        {
+            if (result.Length > 0) result.Append(' ');
 
-        return text[..index] +
-            "<span class=\"highlight\">" +
-            text[index..(index + _searchText.Length)] +
-            "</span>" +
-            text[(index + _searchText.Length)..];
+            var wordLower = word.ToLower();
+            string? bestMatch = null;
+            int bestIndex = -1;
+
+            foreach (var searchWord in searchWords)
+            {
+                var index = wordLower.IndexOf(searchWord);
+                if (index >= 0 && (bestMatch == null || searchWord.Length > bestMatch.Length))
+                {
+                    bestMatch = searchWord;
+                    bestIndex = index;
+                }
+            }
+
+            if (bestMatch != null)
+            {
+                result.Append(word[..bestIndex]);
+                result.Append("<span class=\"highlight\">");
+                result.Append(word[bestIndex..(bestIndex + bestMatch.Length)]);
+                result.Append("</span>");
+                result.Append(word[(bestIndex + bestMatch.Length)..]);
+            }
+            else
+            {
+                result.Append(word);
+            }
+        }
+
+        return result.ToString();
     }
 }

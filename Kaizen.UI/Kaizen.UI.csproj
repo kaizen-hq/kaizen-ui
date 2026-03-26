@@ -7,7 +7,7 @@
 
     <!-- NuGet Package Metadata -->
     <PackageId>KaizenIO.UI</PackageId>
-    <Version>0.0.5-preview.3</Version>
+    <Version>0.0.5-preview.4</Version>
     <Authors>Zach Burke</Authors>
     <Company>Kaizen</Company>
     <Product>KaizenIO.UI</Product>
@@ -33,6 +33,7 @@ Added:
 - GridColumnHeader now supports ChildContent to allow custom content rendering, defaulting to the column name
 - ToolbarButton now supports IsActive parameter that displays a check icon when active
 - SearchChanged callback for ComboBox, allows for fetching data when searching
+- `ComboBox` fuzzy matching now fuzzy matches any combination of words typed in
 
 Fixed:
 - Paginator and DataGrid pagination calculation was incorrect due to integer division
