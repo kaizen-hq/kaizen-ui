@@ -15,10 +15,10 @@
     position: absolute;
     right: -12px;
     top: 16px;
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
     background: white;
-    border: 1px solid #eee;
+    border: 1px solid #777;
     border-radius: 50%;
     cursor: pointer;
     display: flex;
@@ -31,6 +31,8 @@
 .nav-toggle.mobile {
     display: none;
     right: 16px;
+    z-index: 1;
+    top: calc(-1 * var(--header-height) + 16px);
 }
 
 .nav-toggle:hover {
@@ -115,7 +117,7 @@ nav {
     }
 
     .nav-toggle.mobile {
-        display: block;
+        display: flex;
     }
 
     .collapsed ::deep .icon {

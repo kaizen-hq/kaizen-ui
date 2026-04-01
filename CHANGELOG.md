@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - `Paginator` and `DataGrid` pagination calculation was incorrect due to integer division
 - `DataGrid` no longer resets to page 0 when parameters change; only resets if current page is out of bounds
+- Layout no longer breaks the scroll position when refreshing the page
 
 ## [0.0.4] - 2026-02-16
 

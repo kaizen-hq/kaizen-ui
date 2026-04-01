@@ -30,6 +30,8 @@
 html, body {
     margin: 0;
     padding: 0;
+    overflow-y: auto;
+    height: 100%;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -56,18 +58,25 @@ main {
     flex: 1;
     grid-area: main;
     overflow: auto;
-    max-height: calc(100vh - var(--header-height));
     padding: var(--size-1) var(--size-4);
 }
 
 header {
     grid-area: header;
     max-height: var(--header-height);
+    background-color: white;
     box-sizing: border-box;
+    position: sticky;
+    top: 0;
+    z-index: 99;
 }
 
 aside {
     grid-area: aside;
+    position: sticky;
+    top: var(--header-height);
+    align-self: start;
+    z-index: 100;
 }
 
 /* iPhone 16 Pro Max media query */
