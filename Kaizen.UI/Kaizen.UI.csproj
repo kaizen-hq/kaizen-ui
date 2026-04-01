@@ -7,7 +7,7 @@
 
     <!-- NuGet Package Metadata -->
     <PackageId>KaizenIO.UI</PackageId>
-    <Version>0.0.5-preview.5</Version>
+    <Version>0.0.5-preview.6</Version>
     <Authors>Zach Burke</Authors>
     <Company>Kaizen</Company>
     <Product>KaizenIO.UI</Product>
