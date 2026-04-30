@@ -24,7 +24,12 @@ else
 {
     <div class="editable editable-read" style="display: contents">
         @ReadTemplate
+        
         <div class="actions">
+            @if (OtherActions is not null) 
+            {
+                @OtherActions
+            }
             <button type="button" @onclick="StartEditMode">
                 <Blazicon Svg="Lucide.Pencil" />
             </button>
@@ -47,6 +52,9 @@ else
     [Parameter]
     [NotNull]
     public RenderFragment<TItem>? EditTemplate { get; set; }
+
+    [Parameter]
+    public RenderFragment? OtherActions { get; set; }
     
     [Parameter]
     public EventCallback<OnActionCompletedArgs<TItem>> OnActionCompleted { get; set; }

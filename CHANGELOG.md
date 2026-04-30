@@ -12,11 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ToolbarButton` now supports `IsActive` parameter that displays a check icon when active
 - `SearchChanged` callback for `ComboBox`, allows for fetching data when searching
 - `ComboBox` fuzzy matching now fuzzy matches any combination of words typed in
+- `Editable` now supports an `OtherActions` `RenderFragment` for rendering additional buttons alongside the edit action
 
 ### Fixed
 - `Paginator` and `DataGrid` pagination calculation was incorrect due to integer division
 - `DataGrid` no longer resets to page 0 when parameters change; only resets if current page is out of bounds
 - Layout no longer breaks the scroll position when refreshing the page
+- `Editable` button styles are now scoped to the actions container so they no longer leak into consumer templates
 
 ## [0.0.4] - 2026-02-16
 
